@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluador Técnico de Equipos TI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        select { cursor: pointer; }
+        .status-pill { padding: 4px 12px; border-radius: 9999px; font-weight: 600; font-size: 0.875rem; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8 text-center md:text-left flex flex-col md:flex-row justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Evaluación Técnica TI</h1>
+                <p class="text-gray-500">Sistema de evaluación objetiva e iterativa por perfil de usuario</p>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Perfil del Usuario Final</label>
+                <select id="perfilUsuario" onchange="calculateScore()" class="w-64 p-2 border-2 border-blue-500 rounded-lg bg-blue-50 text-blue-800 font-bold focus:outline-none">
+                    <option value="ADMIN">Administrativo / Ejecutivo</option>
+                    <option value="CAD_BIM">CAD / BIM</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Main Table Section -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="card overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-800 text-white">
+                            <tr>
+                                <th class="p-4 text-sm font-semibold uppercase">Criterio</th>
+                                <th class="p-4 text-sm font-semibold uppercase">Condición / Estado</th>
+                                <th class="p-4 text-sm font-semibold uppercase text-center">Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEvaluacion" class="divide-y divide-gray-200 text-gray-700">
+                            <!-- Antigüedad -->
+                            <tr>
+                                <td class="p-4 font-medium">Antigüedad</td>
+                                <td class="p-4">
+                                    <select data-key="antiguedad" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="8">0 – 2 años</option>
+                                        <option value="6">3 – 4 años</option>
+                                        <option value="4">5 – 6 años</option>
+                                        <option value="2">7 – 8 años</option>
+                                        <option value="0">9 – 10 años</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <!-- Estado Físico Group -->
+                            <tr class="bg-gray-50"><td colspan="3" class="px-4 py-2 text-xs font-bold text-gray-500">ESTADO FÍSICO</td></tr>
+                            <tr>
+                                <td class="p-4 font-medium italic pl-8">Carcasa</td>
+                                <td class="p-4">
+                                    <select data-key="carcasa" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="8">Buen estado físico</option>
+                                        <option value="5">Detalles menores</option>
+                                        <option value="0">Dañado / Trizado</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium italic pl-8">Teclado</td>
+                                <td class="p-4">
+                                    <select data-key="teclado" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="8">Buen estado físico</option>
+                                        <option value="5">Detalles menores</option>
+                                        <option value="0">Dañado / Trizado</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium italic pl-8">Pantalla</td>
+                                <td class="p-4">
+                                    <select data-key="pantalla" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="8">Buen estado físico</option>
+                                        <option value="5">Detalles menores</option>
+                                        <option value="0">Dañado / Trizado</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <!-- Puertos y Funcionalidad -->
+                            <tr class="bg-gray-50"><td colspan="3" class="px-4 py-2 text-xs font-bold text-gray-500">CONECTIVIDAD Y COMPONENTES</td></tr>
+                            <tr>
+                                <td class="p-4 font-medium">Estado Batería</td>
+                                <td class="p-4">
+                                    <select data-key="bateria" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="10">80% - 100%</option>
+                                        <option value="6">60% - 79%</option>
+                                        <option value="4">40% - 59%</option>
+                                        <option value="1">&lt; 40%</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Puertos USB</td>
+                                <td class="p-4">
+                                    <select data-key="usb" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="3">Todos operativos</option>
+                                        <option value="1">Algunos con fallas</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Puerto Carga</td>
+                                <td class="p-4">
+                                    <select data-key="carga" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="3">Bueno</option>
+                                        <option value="1">Delicado</option>
+                                        <option value="0">Malo</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <!-- Hardware Crítico -->
+                            <tr class="bg-gray-50"><td colspan="3" class="px-4 py-2 text-xs font-bold text-gray-500">RENDIMIENTO INTERNO</td></tr>
+                            <tr>
+                                <td class="p-4 font-medium">¿Enciende?</td>
+                                <td class="p-4">
+                                    <select data-key="enciende" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="10">Enciende sin problemas</option>
+                                        <option value="5">Enciende con fallas</option>
+                                        <option value="0">No enciende</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Memoria RAM</td>
+                                <td class="p-4">
+                                    <select id="ramSelect" data-key="ram" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="10">≥ 32 GB</option>
+                                        <option value="6">16 GB</option>
+                                        <option value="4">8 GB</option>
+                                        <option value="2">4 GB</option>
+                                        <option value="0">Sin RAM / Falla</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Disco Duro</td>
+                                <td class="p-4">
+                                    <select id="discoSelect" data-key="disco" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="10">SSD > 500 GB</option>
+                                        <option value="6">SSD ≤ 500 GB</option>
+                                        <option value="2">HDD Mecánico</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Tarjeta de Video</td>
+                                <td class="p-4">
+                                    <select id="gpuSelect" data-key="video" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="10">Dedicada ≥ 8 GB</option>
+                                        <option value="6">Dedicada 4 GB</option>
+                                        <option value="4">Dedicada 2 GB</option>
+                                        <option value="2">Integrada</option>
+                                        <option value="0">N/A (Administrativo)</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Dashboard / Results Section -->
+            <div class="space-y-6">
+                <!-- Total Score Card -->
+                <div class="card p-6 text-center">
+                    <h2 class="text-sm font-bold text-gray-500 uppercase mb-2">Puntaje Total</h2>
+                    <div id="totalScoreDisplay" class="text-6xl font-black text-gray-800">0</div>
+                    <div id="statusBadge" class="mt-4 inline-block status-pill bg-gray-200 text-gray-600">Calculando...</div>
+                </div>
+
+                <!-- Upgrades / Messages -->
+                <div class="card p-6">
+                    <h2 class="text-sm font-bold text-gray-800 uppercase mb-4 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"></path></svg>
+                        Recomendaciones TI
+                    </h2>
+                    <div id="upgradeContainer" class="space-y-3">
+                        <!-- Upgrades will appear here -->
+                        <p class="text-gray-400 text-sm italic">Sin alertas pendientes.</p>
+                    </div>
+                </div>
+
+                <!-- Info Box -->
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                    <h3 class="text-blue-800 font-bold text-sm">Criterio de Perfil</h3>
+                    <p id="perfilInfo" class="text-blue-700 text-xs mt-1 leading-relaxed">
+                        Los usuarios Administrativos no requieren GPU dedicada obligatoria.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateScore() {
+            const selects = document.querySelectorAll('#tablaEvaluacion select');
+            const upgradeContainer = document.getElementById('upgradeContainer');
+            const totalDisplay = document.getElementById('totalScoreDisplay');
+            const statusBadge = document.getElementById('statusBadge');
+            const perfil = document.getElementById('perfilUsuario').value;
+            const perfilInfo = document.getElementById('perfilInfo');
+            
+            let total = 0;
+            let messages = [];
+
+            // Sumar puntos
+            selects.forEach(sel => {
+                const val = parseInt(sel.value);
+                total += val;
+                // Actualizar visualmente el puntaje por fila
+                sel.closest('tr').querySelector('.score-val').innerText = val;
+            });
+
+            // LÓGICA DE UPGRADES Y REGLAS DE NEGOCIO
+            
+            // 1. Regla Disco Duro
+            const discoVal = document.getElementById('discoSelect').value;
+            if (discoVal == "2") {
+                messages.push({type: 'warning', text: 'URGENTE: Cambio a SSD requerido.'});
+            }
+
+            // 2. Regla RAM según Perfil
+            const ramVal = document.getElementById('ramSelect').value; // 10:32, 6:16, 4:8, 2:4
+            if (perfil === 'ADMIN' && parseInt(ramVal) < 6) {
+                messages.push({type: 'info', text: 'Upgrade RAM: Subir a 16GB para mejor desempeño ejecutivo.'});
+            }
+            if (perfil === 'CAD_BIM' && parseInt(ramVal) < 6) {
+                messages.push({type: 'critical', text: 'CRÍTICO: Upgrade RAM obligatorio a ≥ 16GB para diseño.'});
+            }
+
+            // 3. Regla GPU para CAD/BIM
+            const gpuVal = document.getElementById('gpuSelect').value;
+            if (perfil === 'CAD_BIM') {
+                perfilInfo.innerText = "Perfil CAD/BIM requiere GPU dedicada >= 4GB obligatoria para calificar.";
+                if (parseInt(gpuVal) < 6) { // Menos de 4GB
+                    messages.push({type: 'error', text: 'PERFIL: GPU insuficiente para CAD/BIM. Reasignar a Administrativo.'});
+                }
+            } else {
+                perfilInfo.innerText = "Los usuarios Administrativos no requieren GPU dedicada obligatoria.";
+            }
+
+            // Renderizar mensajes
+            upgradeContainer.innerHTML = '';
+            if (messages.length === 0) {
+                upgradeContainer.innerHTML = '<p class="text-green-500 text-sm font-medium">✓ Equipo cumple requerimientos base.</p>';
+            } else {
+                messages.forEach(msg => {
+                    let colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-200';
+                    if (msg.type === 'critical' || msg.type === 'error') colorClass = 'bg-red-100 text-red-800 border-red-200';
+                    if (msg.type === 'info') colorClass = 'bg-blue-100 text-blue-800 border-blue-200';
+                    
+                    const div = document.createElement('div');
+                    div.className = `p-3 rounded border text-xs font-bold ${colorClass}`;
+                    div.innerText = msg.text;
+                    upgradeContainer.appendChild(div);
+                });
+            }
+
+            // Estado Final
+            totalDisplay.innerText = total;
+            if (total >= 50) {
+                statusBadge.innerText = "CANDIDATO A USO";
+                statusBadge.className = "mt-4 inline-block status-pill bg-green-500 text-white";
+                totalDisplay.className = "text-6xl font-black text-green-600";
+            } else if (total >= 40) {
+                statusBadge.innerText = "CANDIDATO CON UPGRADE";
+                statusBadge.className = "mt-4 inline-block status-pill bg-yellow-500 text-white";
+                totalDisplay.className = "text-6xl font-black text-yellow-600";
+            } else {
+                statusBadge.innerText = "BAJA TI";
+                statusBadge.className = "mt-4 inline-block status-pill bg-red-500 text-white";
+                totalDisplay.className = "text-6xl font-black text-red-600";
+            }
+        }
+
+        // Ejecutar al cargar
+        window.onload = calculateScore;
+    </script>
+</body>
+</html>
