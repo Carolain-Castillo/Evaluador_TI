@@ -285,6 +285,20 @@
                 messages.push({type: 'warning', text: 'URGENTE: Cambio a SSD requerido.'});
             }
 
+            // 1.b Regla Puertos USB: algunos con fallas
+            const usbSel = document.querySelector('select[data-key="usb"]');
+            const usbVal = usbSel ? usbSel.value : null;
+            if (usbVal === "1") {
+                messages.push({type: 'warning', text: 'Evaluar antiguedad y estado fisico del equipo para salvar puerto USB.'});
+            }
+
+            // 1.c Regla Puerto de carga delicado
+            const cargaSel = document.querySelector('select[data-key="carga"]');
+            const cargaVal = cargaSel ? cargaSel.value : null;
+            if (cargaVal === "1") {
+                messages.push({type: 'warning', text: 'Puerto principal delicado, revisar para mantencion o usar puerto secundario.'});
+            }
+
             // 2. Regla RAM según Perfil
             const ramVal = document.getElementById('ramSelect').value; // 10:32, 6:16, 4:8, 2:4
             if (perfil === 'ADMIN' && parseInt(ramVal) < 6) {
@@ -296,6 +310,10 @@
 
             // 3. Regla GPU para CAD/BIM
             const gpuVal = document.getElementById('gpuSelect').value;
+            // Mensaje adicional si no tiene tarjeta de video (valor 0 / N/A)
+            if (gpuVal === "0") {
+                messages.push({type: 'info', text: 'GPU limitada.'});
+            }
             if (perfil === 'CAD_BIM') {
                 perfilInfo.innerText = "Perfil CAD/BIM requiere GPU dedicada >= 4GB obligatoria para calificar.";
                 if (parseInt(gpuVal) < 6) { // Menos de 4GB
@@ -311,14 +329,14 @@
             if (antiguedadVal === "2") { // 7 - 8 años
                 messages.push({
                     type: 'error',
-                    text: 'EQUIPO: Antigüedad 7–8 años — Clasificado como "No reasignable". Se recomienda reciclaje controlado y recuperación de componentes reutilizables (almacenamiento, módulos RAM, disipadores, conectores y batería). Registrar identificadores y ejecutar borrado seguro de datos antes de disposición.'
+                    text: 'EQUIPO: Antigüedad 7–8 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje y recuperación de componentes, (almacenamiento, RAM, conectores, etc). Asegurar formateo de disco.'
                 });
                 noReasignable = true;
             }
             if (antiguedadVal === "0") { // 9 - 10 años
                 messages.push({
                     type: 'error',
-                    text: 'EQUIPO: Antigüedad 9–10 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje y recuperación de componentes críticos; validar integridad de los componentes recuperados y documentar la disposición conforme a la normativa interna.'
+                    text: 'EQUIPO: Antigüedad 9–10 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje y recuperación de componentes, (almacenamiento, RAM, conectores, etc). Asegurar formateo de disco.'
                 });
                 noReasignable = true;
             }
