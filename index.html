@@ -299,6 +299,34 @@
                 messages.push({type: 'warning', text: 'Puerto principal delicado, revisar para mantencion o usar puerto secundario.'});
             }
 
+            // 1.d Regla Puerto Red: No funciona
+            const redSel = document.querySelector('select[data-key="red"]');
+            const redVal = redSel ? redSel.value : null;
+            if (redVal === "0") {
+                messages.push({type: 'warning', text: 'Evaluar antiguedad y estado fisico del equipo para salvar Puerto de Red.'});
+            }
+
+            // 1.e Regla Puerto HDMI: No funciona
+            const hdmiSel = document.querySelector('select[data-key="hdmi"]');
+            const hdmiVal = hdmiSel ? hdmiSel.value : null;
+            if (hdmiVal === "0") {
+                messages.push({type: 'warning', text: 'Evaluar antiguedad y estado fisico del equipo para salvar puerto HDMI.'});
+            }
+
+            // 1.f Regla Audio: No funciona
+            const audioSel = document.querySelector('select[data-key="audio"]');
+            const audioVal = audioSel ? audioSel.value : null;
+            if (audioVal === "0") {
+                messages.push({type: 'warning', text: 'Evaluar antiguedad y estado fisico del equipo para salvar el estado del audio.'});
+            }
+
+            // 1.g Regla Cámara: No funciona
+            const camSel = document.querySelector('select[data-key="camara"]');
+            const camVal = camSel ? camSel.value : null;
+            if (camVal === "0") {
+                messages.push({type: 'warning', text: 'Evaluar antiguedad y estado fisico del equipo para salvar el estado de la camara.'});
+            }
+
             // 2. Regla RAM según Perfil
             const ramVal = document.getElementById('ramSelect').value; // 10:32, 6:16, 4:8, 2:4
             if (perfil === 'ADMIN' && parseInt(ramVal) < 6) {
