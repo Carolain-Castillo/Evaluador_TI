@@ -289,51 +289,72 @@
             const usbSel = document.querySelector('select[data-key="usb"]');
             const usbVal = usbSel ? usbSel.value : null;
             if (usbVal === "1") {
-                messages.push({type: 'warning', text: 'Evaluar antiguedad y estado fisico del equipo para salvar puerto USB.'});
+                messages.push({type: 'warning', text: 'USB: Evaluar antigüedad y estado fisico del equipo para salvar puerto USB.'});
+            }
+
+            // 1.h Regla Estado Físico: Carcasa dañada
+            const carcSel = document.querySelector('select[data-key="carcasa"]');
+            const carcVal = carcSel ? carcSel.value : null;
+            if (carcVal === "0") {
+                messages.push({type: 'warning', text: 'Carcasa: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.'});
+            }
+
+            // 1.i Regla Estado Físico: Teclado dañado
+            const teclaSel = document.querySelector('select[data-key="teclado"]');
+            const teclaVal = teclaSel ? teclaSel.value : null;
+            if (teclaVal === "0") {
+                messages.push({type: 'warning', text: 'Teclado: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.'});
+            }
+
+            // 1.j Regla Estado Físico: Pantalla dañada
+            const pantSel = document.querySelector('select[data-key="pantalla"]');
+            const pantVal = pantSel ? pantSel.value : null;
+            if (pantVal === "0") {
+                messages.push({type: 'warning', text: 'Pantalla: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.'});
             }
 
             // 1.c Regla Puerto de carga delicado
             const cargaSel = document.querySelector('select[data-key="carga"]');
             const cargaVal = cargaSel ? cargaSel.value : null;
             if (cargaVal === "1") {
-                messages.push({type: 'warning', text: 'Puerto principal delicado, revisar para mantencion o usar puerto secundario.'});
+                messages.push({type: 'warning', text: 'Puerto Carga: Puerto principal delicado, revisar para mantención según antigüedad, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.d Regla Puerto Red: No funciona
             const redSel = document.querySelector('select[data-key="red"]');
             const redVal = redSel ? redSel.value : null;
             if (redVal === "0") {
-                messages.push({type: 'warning', text: 'Evaluar antiguedad y estado fisico del equipo para salvar Puerto de Red.'});
+                messages.push({type: 'warning', text: 'Puerto Red: Evaluar antigüedad y estado fisico del equipo para salvar Puerto de Red, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.e Regla Puerto HDMI: No funciona
             const hdmiSel = document.querySelector('select[data-key="hdmi"]');
             const hdmiVal = hdmiSel ? hdmiSel.value : null;
             if (hdmiVal === "0") {
-                messages.push({type: 'warning', text: 'Evaluar antiguedad y estado fisico del equipo para salvar puerto HDMI.'});
+                messages.push({type: 'warning', text: 'Puerto HDMI: Evaluar antigüedad y estado fisico del equipo para salvar puerto HDMI, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.f Regla Audio: No funciona
             const audioSel = document.querySelector('select[data-key="audio"]');
             const audioVal = audioSel ? audioSel.value : null;
             if (audioVal === "0") {
-                messages.push({type: 'warning', text: 'Evaluar antiguedad y estado fisico del equipo para salvar el estado del audio.'});
+                messages.push({type: 'warning', text: 'Audio: Evaluar antigüedad y estado fisico del equipo para salvar el estado del audio, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.g Regla Cámara: No funciona
             const camSel = document.querySelector('select[data-key="camara"]');
             const camVal = camSel ? camSel.value : null;
             if (camVal === "0") {
-                messages.push({type: 'warning', text: 'Evaluar antiguedad y estado fisico del equipo para salvar el estado de la camara.'});
+                messages.push({type: 'warning', text: 'Cámara: Evaluar antigüedad y estado fisico del equipo para salvar la cámara, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 2. Regla RAM según Perfil
             const ramVal = document.getElementById('ramSelect').value; // 10:32, 6:16, 4:8, 2:4
             if (perfil === 'ADMIN' && parseInt(ramVal) < 6) {
-                messages.push({type: 'info', text: 'Upgrade RAM: Subir a 16GB para mejor desempeño ejecutivo.'});
+                messages.push({type: 'info', text: 'Upgrade RAM: Subir a 16GB para mejor desempeño.'});
             }
             if (perfil === 'CAD_BIM' && parseInt(ramVal) < 6) {
-                messages.push({type: 'critical', text: 'CRÍTICO: Upgrade RAM obligatorio a ≥ 16GB para diseño.'});
+                messages.push({type: 'critical', text: 'CRÍTICO: Upgrade RAM obligatorio a ≥ 16GB.'});
             }
 
             // 3. Regla GPU para CAD/BIM
@@ -345,7 +366,7 @@
             if (perfil === 'CAD_BIM') {
                 perfilInfo.innerText = "Perfil CAD/BIM requiere GPU dedicada >= 4GB obligatoria para calificar.";
                 if (parseInt(gpuVal) < 6) { // Menos de 4GB
-                    messages.push({type: 'error', text: 'PERFIL: GPU insuficiente para CAD/BIM. Reasignar a Administrativo.'});
+                    messages.push({type: 'error', text: 'PERFIL: GPU insuficiente para CAD/BIM.'});
                 }
             } else {
                 perfilInfo.innerText = "Los usuarios Administrativos no requieren GPU dedicada obligatoria.";
@@ -357,14 +378,14 @@
             if (antiguedadVal === "2") { // 7 - 8 años
                 messages.push({
                     type: 'error',
-                    text: 'EQUIPO: Antigüedad 7–8 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje y recuperación de componentes, (almacenamiento, RAM, conectores, etc). Asegurar formateo de disco.'
+                    text: 'EQUIPO: Antigüedad 7–8 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje o préstamo. '
                 });
                 noReasignable = true;
             }
             if (antiguedadVal === "0") { // 9 - 10 años
                 messages.push({
                     type: 'error',
-                    text: 'EQUIPO: Antigüedad 9–10 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje y recuperación de componentes, (almacenamiento, RAM, conectores, etc). Asegurar formateo de disco.'
+                    text: 'EQUIPO: Antigüedad 9–10 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje o préstamo.'
                 });
                 noReasignable = true;
             }
@@ -390,7 +411,7 @@
             totalDisplay.innerText = total;
             // Si la antigüedad marca no reasignable, forzar estado de reciclaje
             if (noReasignable) {
-                statusBadge.innerText = "NO REASIGNABLE — RECICLAJE";
+                statusBadge.innerText = "NO REASIGNABLE — RECICLAJE / PRÉSTAMO";
                 statusBadge.className = "mt-4 inline-block status-pill bg-red-700 text-white";
                 totalDisplay.className = "text-6xl font-black text-red-600";
             } else if (total >= 50) {
@@ -412,4 +433,4 @@
         window.onload = calculateScore;
     </script>
 </body>
-</html>
+</html>l>
