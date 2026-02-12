@@ -129,6 +129,46 @@
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
                             </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Estado Puerto HDMI</td>
+                                <td class="p-4">
+                                    <select data-key="hdmi" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="3">Funciona</option>
+                                        <option value="0">No funciona</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Estado Puerto Red</td>
+                                <td class="p-4">
+                                    <select data-key="red" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="3">Funciona</option>
+                                        <option value="0">No funciona</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Estado del audio</td>
+                                <td class="p-4">
+                                    <select data-key="audio" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="3">Funciona</option>
+                                        <option value="0">No funciona</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Estado de la cámara</td>
+                                <td class="p-4">
+                                    <select data-key="camara" onchange="calculateScore()" class="w-full p-1 border rounded">
+                                        <option value="3">Funciona</option>
+                                        <option value="0">No funciona</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
                             <!-- Hardware Crítico -->
                             <tr class="bg-gray-50"><td colspan="3" class="px-4 py-2 text-xs font-bold text-gray-500">RENDIMIENTO INTERNO</td></tr>
                             <tr>
@@ -227,6 +267,7 @@
             
             let total = 0;
             let messages = [];
+            let noReasignable = false;
 
             // Sumar puntos
             selects.forEach(sel => {
@@ -264,6 +305,24 @@
                 perfilInfo.innerText = "Los usuarios Administrativos no requieren GPU dedicada obligatoria.";
             }
 
+            // 4. Regla Antigüedad - equipos no reasignables
+            const antiguedadSel = document.querySelector('select[data-key="antiguedad"]');
+            const antiguedadVal = antiguedadSel ? antiguedadSel.value : null;
+            if (antiguedadVal === "2") { // 7 - 8 años
+                messages.push({
+                    type: 'error',
+                    text: 'EQUIPO: Antigüedad 7–8 años — Clasificado como "No reasignable". Se recomienda reciclaje controlado y recuperación de componentes reutilizables (almacenamiento, módulos RAM, disipadores, conectores y batería). Registrar identificadores y ejecutar borrado seguro de datos antes de disposición.'
+                });
+                noReasignable = true;
+            }
+            if (antiguedadVal === "0") { // 9 - 10 años
+                messages.push({
+                    type: 'error',
+                    text: 'EQUIPO: Antigüedad 9–10 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje y recuperación de componentes críticos; validar integridad de los componentes recuperados y documentar la disposición conforme a la normativa interna.'
+                });
+                noReasignable = true;
+            }
+
             // Renderizar mensajes
             upgradeContainer.innerHTML = '';
             if (messages.length === 0) {
@@ -283,7 +342,12 @@
 
             // Estado Final
             totalDisplay.innerText = total;
-            if (total >= 50) {
+            // Si la antigüedad marca no reasignable, forzar estado de reciclaje
+            if (noReasignable) {
+                statusBadge.innerText = "NO REASIGNABLE — RECICLAJE";
+                statusBadge.className = "mt-4 inline-block status-pill bg-red-700 text-white";
+                totalDisplay.className = "text-6xl font-black text-red-600";
+            } else if (total >= 50) {
                 statusBadge.innerText = "CANDIDATO A USO";
                 statusBadge.className = "mt-4 inline-block status-pill bg-green-500 text-white";
                 totalDisplay.className = "text-6xl font-black text-green-600";
