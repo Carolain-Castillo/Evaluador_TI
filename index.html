@@ -100,10 +100,11 @@
                                 <td class="p-4 font-medium">Estado Batería</td>
                                 <td class="p-4">
                                     <select data-key="bateria" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="10">80% - 100%</option>
-                                        <option value="6">60% - 79%</option>
-                                        <option value="4">40% - 59%</option>
-                                        <option value="1">&lt; 40%</option>
+                                        <option value="10">90% - 100%</option>
+                                        <option value="7">80% - 89%</option>
+                                        <option value="4">70% - 79%</option>
+                                        <option value="1">60% - 69%</option>
+                                        <option value="0">&lt; 60%</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -285,6 +286,21 @@
                 messages.push({type: 'warning', text: 'URGENTE: Cambio a SSD requerido.'});
             }
 
+            // Nueva regla Estado Batería: mensajes por rango y recomendaciones
+            const bateriaSel = document.querySelector('select[data-key="bateria"]');
+            const bateriaVal = bateriaSel ? bateriaSel.value : null;
+            if (bateriaVal === "10") {
+                messages.push({type: 'info', text: 'Batería excelente, poco uso.'});
+            } else if (bateriaVal === "7") {
+                messages.push({type: 'info', text: 'Batería buena, degradación leve.'});
+            } else if (bateriaVal === "4") {
+                messages.push({type: 'warning', text: 'Batería Aceptable / Gastada.'});
+            } else if (bateriaVal === "1") {
+                messages.push({type: 'warning', text: 'Batería degradada, es recomendable cambiar según antigüedad del equipo.'});
+            } else if (bateriaVal === "0") {
+                messages.push({type: 'critical', text: 'Batería muy gastada, es recomendable cambiar según antigüedad del equipo.'});
+            }
+
             // 1.b Regla Puertos USB: algunos con fallas
             const usbSel = document.querySelector('select[data-key="usb"]');
             const usbVal = usbSel ? usbSel.value : null;
@@ -318,6 +334,10 @@
             const cargaVal = cargaSel ? cargaSel.value : null;
             if (cargaVal === "1") {
                 messages.push({type: 'warning', text: 'Puerto Carga: Puerto principal delicado, revisar para mantención según antigüedad, o mandar a Reciclaje / Préstamo.'});
+            }
+            // Si el puerto de carga está en mal estado
+            if (cargaVal === "0") {
+                messages.push({type: 'warning', text: 'Puerto Carga: Evaluar antigüedad del equipo para salvar puerto o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.d Regla Puerto Red: No funciona
