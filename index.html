@@ -382,7 +382,7 @@
             // 2. Regla RAM según Perfil
             const ramVal = document.getElementById('ramSelect').value; // 10:32, 6:16, 4:8, 2:4
             if (perfil === 'ADMIN' && parseInt(ramVal) < 6) {
-                messages.push({type: 'info', text: 'Upgrade RAM: Subir a 16GB para mejor desempeño.'});
+                messages.push({type: 'info', text: 'Upgrade RAM: Subir ≥ a 16GB para mejor desempeño.'});
             }
             if (perfil === 'CAD_BIM' && parseInt(ramVal) < 6) {
                 messages.push({type: 'critical', text: 'Memoria RAM: Upgrade de RAM obligatorio para CAD/BIM a ≥ 16GB.'});
@@ -401,7 +401,7 @@
             if (perfil === 'CAD_BIM') {
                 perfilInfo.innerText = "Perfil CAD/BIM requiere GPU dedicada >= 4GB obligatoria para calificar.";
                 if (parseInt(gpuVal) < 6) { // Menos de 4GB
-                    messages.push({type: 'error', text: 'PERFIL: GPU insuficiente para CAD/BIM.'});
+                    messages.push({type: 'error', text: 'GPU: Insuficiente para CAD/BIM.'});
                 }
             } else {
                 perfilInfo.innerText = "Los usuarios Administrativos no requieren GPU dedicada obligatoria.";
@@ -468,4 +468,4 @@
         window.onload = calculateScore;
     </script>
 </body>
-</html>l>
+</html>
