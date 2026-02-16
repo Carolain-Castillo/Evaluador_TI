@@ -177,7 +177,6 @@
                                 <td class="p-4">
                                     <select data-key="enciende" onchange="calculateScore()" class="w-full p-1 border rounded">
                                         <option value="10">Enciende sin problemas</option>
-                                        <option value="5">Enciende con fallas</option>
                                         <option value="0">No enciende</option>
                                     </select>
                                 </td>
@@ -191,7 +190,7 @@
                                         <option value="6">16 GB</option>
                                         <option value="4">8 GB</option>
                                         <option value="2">4 GB</option>
-                                        <option value="0">Sin RAM / Falla</option>
+                                        <option value="0">Sin RAM</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -214,8 +213,7 @@
                                         <option value="10">Dedicada ≥ 8 GB</option>
                                         <option value="6">Dedicada 4 GB</option>
                                         <option value="4">Dedicada 2 GB</option>
-                                        <option value="2">Integrada</option>
-                                        <option value="0">N/A (Administrativo)</option>
+                                        <option value="0">No tiene</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -283,7 +281,13 @@
             // 1. Regla Disco Duro
             const discoVal = document.getElementById('discoSelect').value;
             if (discoVal == "2") {
-                messages.push({type: 'warning', text: 'URGENTE: Cambio a SSD requerido.'});
+                messages.push({type: 'warning', text: 'Disco Duro: Cambio a Disco SSD, o mandar a Reciclaje / Préstamo según antigüedad y estado físico del equipo.'});
+            } else if (discoVal == "6") {
+                if (perfil === 'CAD_BIM') {
+                    messages.push({type: 'error', text: 'Disco Duro: Insuficiente para CAD/BIM, se requiere aumentar.'});
+                } else {
+                    messages.push({type: 'warning', text: 'Disco Duro: Se requiere mantener o aumentar disco según categoría del equipo.'});
+                }
             }
 
             // Nueva regla Estado Batería: mensajes por rango y recomendaciones
@@ -305,7 +309,7 @@
             const usbSel = document.querySelector('select[data-key="usb"]');
             const usbVal = usbSel ? usbSel.value : null;
             if (usbVal === "1") {
-                messages.push({type: 'warning', text: 'USB: Evaluar antigüedad y estado fisico del equipo para salvar puerto USB.'});
+                messages.push({type: 'warning', text: 'USB: Evaluar antigüedad y estado físico del equipo para salvar puerto USB.'});
             }
 
             // 1.h Regla Estado Físico: Carcasa dañada
@@ -344,28 +348,35 @@
             const redSel = document.querySelector('select[data-key="red"]');
             const redVal = redSel ? redSel.value : null;
             if (redVal === "0") {
-                messages.push({type: 'warning', text: 'Puerto Red: Evaluar antigüedad y estado fisico del equipo para salvar Puerto de Red, o mandar a Reciclaje / Préstamo.'});
+                messages.push({type: 'warning', text: 'Puerto Red: Evaluar antigüedad y estado físico del equipo para salvar Puerto de Red, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.e Regla Puerto HDMI: No funciona
             const hdmiSel = document.querySelector('select[data-key="hdmi"]');
             const hdmiVal = hdmiSel ? hdmiSel.value : null;
             if (hdmiVal === "0") {
-                messages.push({type: 'warning', text: 'Puerto HDMI: Evaluar antigüedad y estado fisico del equipo para salvar puerto HDMI, o mandar a Reciclaje / Préstamo.'});
+                messages.push({type: 'warning', text: 'Puerto HDMI: Evaluar antigüedad y estado físico del equipo para salvar puerto HDMI, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.f Regla Audio: No funciona
             const audioSel = document.querySelector('select[data-key="audio"]');
             const audioVal = audioSel ? audioSel.value : null;
             if (audioVal === "0") {
-                messages.push({type: 'warning', text: 'Audio: Evaluar antigüedad y estado fisico del equipo para salvar el estado del audio, o mandar a Reciclaje / Préstamo.'});
+                messages.push({type: 'warning', text: 'Audio: Evaluar antigüedad y estado físico del equipo para salvar el estado del audio, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.g Regla Cámara: No funciona
             const camSel = document.querySelector('select[data-key="camara"]');
             const camVal = camSel ? camSel.value : null;
             if (camVal === "0") {
-                messages.push({type: 'warning', text: 'Cámara: Evaluar antigüedad y estado fisico del equipo para salvar la cámara, o mandar a Reciclaje / Préstamo.'});
+                messages.push({type: 'warning', text: 'Cámara: Evaluar antigüedad y estado físico del equipo para salvar la cámara, o mandar a Reciclaje / Préstamo.'});
+            }
+
+            // Regla ¿Enciende?: No enciende -> mandar a Reciclaje
+            const enciendeSel = document.querySelector('select[data-key="enciende"]');
+            const enciendeVal = enciendeSel ? enciendeSel.value : null;
+            if (enciendeVal === "0") {
+                messages.push({type: 'error', text: '¿Enciende?: No enciende, mandar equipo a Reciclaje.'});
             }
 
             // 2. Regla RAM según Perfil
@@ -374,13 +385,17 @@
                 messages.push({type: 'info', text: 'Upgrade RAM: Subir a 16GB para mejor desempeño.'});
             }
             if (perfil === 'CAD_BIM' && parseInt(ramVal) < 6) {
-                messages.push({type: 'critical', text: 'CRÍTICO: Upgrade RAM obligatorio a ≥ 16GB.'});
+                messages.push({type: 'critical', text: 'Memoria RAM: Upgrade de RAM obligatorio para CAD/BIM a ≥ 16GB.'});
+            }
+            // Si no tiene RAM o hay falla, sugerir evaluar según antigüedad/estado
+            if (ramVal === "0") {
+                messages.push({type: 'warning', text: 'Evaluar antigüedad y estado físico del equipo para colocar RAM o mandar equipo a Reciclaje / Préstamo.'});
             }
 
             // 3. Regla GPU para CAD/BIM
             const gpuVal = document.getElementById('gpuSelect').value;
-            // Mensaje adicional si no tiene tarjeta de video (valor 0 / N/A)
-            if (gpuVal === "0") {
+            // Mensaje adicional para GPU integrada (si existiera)
+            if (gpuVal === "2") {
                 messages.push({type: 'info', text: 'GPU limitada.'});
             }
             if (perfil === 'CAD_BIM') {
