@@ -230,6 +230,7 @@
                     <h2 class="text-sm font-bold text-gray-500 uppercase mb-2">Puntaje Total</h2>
                     <div id="totalScoreDisplay" class="text-6xl font-black text-gray-800">0</div>
                     <div id="statusBadge" class="mt-4 inline-block status-pill bg-gray-200 text-gray-600">Calculando...</div>
+                    <div id="noEnciendeBadge" class="mt-3 inline-block status-pill bg-red-700 text-white hidden"></div>
                 </div>
 
                 <!-- Upgrades / Messages -->
@@ -377,6 +378,20 @@
             const enciendeVal = enciendeSel ? enciendeSel.value : null;
             if (enciendeVal === "0") {
                 messages.push({type: 'error', text: '¿Enciende?: No enciende, mandar equipo a Reciclaje.'});
+                // Forzar no reasignable si no enciende
+                noReasignable = true;
+            }
+
+            // Mostrar/ocultar badge rojo destacado bajo Puntaje Total si no enciende
+            const noEnciendeBadge = document.getElementById('noEnciendeBadge');
+            if (noEnciendeBadge) {
+                if (enciendeVal === "0") {
+                    noEnciendeBadge.innerText = 'EQUIPO NO ENCIENDE';
+                    noEnciendeBadge.classList.remove('hidden');
+                } else {
+                    noEnciendeBadge.innerText = '';
+                    noEnciendeBadge.classList.add('hidden');
+                }
             }
 
             // 2. Regla RAM según Perfil
