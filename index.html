@@ -50,11 +50,11 @@
                                 <td class="p-4 font-medium">Antigüedad</td>
                                 <td class="p-4">
                                     <select data-key="antiguedad" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="8">0 – 2 años</option>
+                                        <option value="10">0 – 2 años</option>
                                         <option value="6">3 – 4 años</option>
-                                        <option value="4">5 – 6 años</option>
-                                        <option value="2">7 – 8 años</option>
-                                        <option value="0">9 – 10 años</option>
+                                        <option value="3">5 – 6 años</option>
+                                        <option value="1">7 – 8 años</option>
+                                        <option value="1">9 – 10 años</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -65,9 +65,9 @@
                                 <td class="p-4 font-medium italic pl-8">Carcasa</td>
                                 <td class="p-4">
                                     <select data-key="carcasa" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="8">Buen estado físico</option>
-                                        <option value="5">Detalles menores</option>
-                                        <option value="0">Dañado / Trizado</option>
+                                        <option value="10">Buen estado físico</option>
+                                        <option value="6">Detalles menores</option>
+                                        <option value="1">Dañado / Trizado</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -76,9 +76,9 @@
                                 <td class="p-4 font-medium italic pl-8">Teclado</td>
                                 <td class="p-4">
                                     <select data-key="teclado" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="8">Buen estado físico</option>
-                                        <option value="5">Detalles menores</option>
-                                        <option value="0">Dañado / Trizado</option>
+                                        <option value="10">Buen estado físico</option>
+                                        <option value="6">Detalles menores</option>
+                                        <option value="1">Dañado / Trizado</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -87,22 +87,21 @@
                                 <td class="p-4 font-medium italic pl-8">Pantalla</td>
                                 <td class="p-4">
                                     <select data-key="pantalla" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="8">Buen estado físico</option>
-                                        <option value="5">Detalles menores</option>
-                                        <option value="0">Dañado / Trizado</option>
+                                        <option value="10">Buen estado físico</option>
+                                        <option value="6">Detalles menores</option>
+                                        <option value="1">Dañado / Trizado</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
                             </tr>
-                            <!-- Puertos y Funcionalidad -->
-                            <tr class="bg-gray-50"><td colspan="3" class="px-4 py-2 text-xs font-bold text-gray-500">CONECTIVIDAD Y COMPONENTES</td></tr>
+                            <!-- Puertos y Funcionalidad (integrado bajo ESTADO FÍSICO) -->
                             <tr>
                                 <td class="p-4 font-medium">Estado Batería</td>
                                 <td class="p-4">
                                     <select data-key="bateria" onchange="calculateScore()" class="w-full p-1 border rounded">
                                         <option value="10">90% - 100%</option>
-                                        <option value="7">80% - 89%</option>
-                                        <option value="4">70% - 79%</option>
+                                        <option value="6">80% - 89%</option>
+                                        <option value="3">70% - 79%</option>
                                         <option value="1">60% - 69%</option>
                                         <option value="0">&lt; 60%</option>
                                     </select>
@@ -113,7 +112,7 @@
                                 <td class="p-4 font-medium">Puertos USB</td>
                                 <td class="p-4">
                                     <select data-key="usb" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="3">Todos operativos</option>
+                                        <option value="10">Todos operativos</option>
                                         <option value="1">Algunos con fallas</option>
                                     </select>
                                 </td>
@@ -123,9 +122,9 @@
                                 <td class="p-4 font-medium">Puerto Carga</td>
                                 <td class="p-4">
                                     <select data-key="carga" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="3">Bueno</option>
-                                        <option value="1">Delicado</option>
-                                        <option value="0">Malo</option>
+                                        <option value="10">Bueno</option>
+                                        <option value="6">Delicado</option>
+                                        <option value="1">Malo</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -134,8 +133,8 @@
                                 <td class="p-4 font-medium">Estado Puerto HDMI</td>
                                 <td class="p-4">
                                     <select data-key="hdmi" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="3">Funciona</option>
-                                        <option value="0">No funciona</option>
+                                        <option value="10">Funciona</option>
+                                        <option value="1">No funciona</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -144,8 +143,8 @@
                                 <td class="p-4 font-medium">Estado Puerto Red</td>
                                 <td class="p-4">
                                     <select data-key="red" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="3">Funciona</option>
-                                        <option value="0">No funciona</option>
+                                        <option value="10">Funciona</option>
+                                        <option value="1">No funciona</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -154,8 +153,8 @@
                                 <td class="p-4 font-medium">Estado del audio</td>
                                 <td class="p-4">
                                     <select data-key="audio" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="3">Funciona</option>
-                                        <option value="0">No funciona</option>
+                                        <option value="10">Funciona</option>
+                                        <option value="1">No funciona</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -164,8 +163,8 @@
                                 <td class="p-4 font-medium">Estado de la cámara</td>
                                 <td class="p-4">
                                     <select data-key="camara" onchange="calculateScore()" class="w-full p-1 border rounded">
-                                        <option value="3">Funciona</option>
-                                        <option value="0">No funciona</option>
+                                        <option value="10">Funciona</option>
+                                        <option value="1">No funciona</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -188,8 +187,8 @@
                                     <select id="ramSelect" data-key="ram" onchange="calculateScore()" class="w-full p-1 border rounded">
                                         <option value="10">≥ 32 GB</option>
                                         <option value="6">16 GB</option>
-                                        <option value="4">8 GB</option>
-                                        <option value="2">4 GB</option>
+                                        <option value="3">8 GB</option>
+                                        <option value="1">4 GB</option>
                                         <option value="0">Sin RAM</option>
                                     </select>
                                 </td>
@@ -201,7 +200,7 @@
                                     <select id="discoSelect" data-key="disco" onchange="calculateScore()" class="w-full p-1 border rounded">
                                         <option value="10">SSD > 500 GB</option>
                                         <option value="6">SSD ≤ 500 GB</option>
-                                        <option value="2">HDD Mecánico</option>
+                                        <option value="1">HDD Mecánico</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -212,7 +211,7 @@
                                     <select id="gpuSelect" data-key="video" onchange="calculateScore()" class="w-full p-1 border rounded">
                                         <option value="10">Dedicada ≥ 8 GB</option>
                                         <option value="6">Dedicada 4 GB</option>
-                                        <option value="4">Dedicada 2 GB</option>
+                                        <option value="3">Dedicada 2 GB</option>
                                         <option value="0">No tiene</option>
                                     </select>
                                 </td>
@@ -231,6 +230,21 @@
                     <div id="totalScoreDisplay" class="text-6xl font-black text-gray-800">0</div>
                     <div id="statusBadge" class="mt-4 inline-block status-pill bg-gray-200 text-gray-600">Calculando...</div>
                     <div id="noEnciendeBadge" class="mt-3 inline-block status-pill bg-red-700 text-white hidden"></div>
+                </div>
+
+                <!-- Desglose de Ponderaciones -->
+                <div class="card p-6 text-center">
+                    <h2 class="text-sm font-bold text-gray-500 uppercase mb-2">Desglose Ponderaciones</h2>
+                    <div id="antiguedadSide" class="text-sm font-bold text-gray-700 mb-2"></div>
+                    <div id="estadoSide" class="text-sm font-bold text-gray-700 mb-2"></div>
+                    <div id="rendimientoSide" class="text-sm font-bold text-gray-700"></div>
+                </div>
+
+                <!-- Puntaje Ponderado (tarjeta separada) -->
+                <div class="card p-6 text-center">
+                    <h2 class="text-sm font-bold text-gray-500 uppercase mb-2">Puntaje Ponderado (0–100%)</h2>
+                    <div id="weightedTotalDisplay" class="text-5xl font-black text-gray-800">0%</div>
+                    <div id="weightedStatusBadge" class="mt-3 inline-block status-pill bg-gray-200 text-gray-600">Calculando...</div>
                 </div>
 
                 <!-- Upgrades / Messages -->
@@ -277,6 +291,71 @@
                 sel.closest('tr').querySelector('.score-val').innerText = val;
             });
 
+            // Calcular máximo posible dinámicamente (para normalizar a 0-100)
+            let maxPossible = 0;
+            selects.forEach(sel => {
+                const opts = Array.from(sel.options).map(o => parseInt(o.value) || 0);
+                if (opts.length) maxPossible += Math.max(...opts);
+            });
+            const displayTotal = maxPossible > 0 ? Math.round((total / maxPossible) * 100) : 0;
+
+            // Guardar total crudo de Antigüedad y calcular su ponderación al 50% (sin alterar los puntos seleccionados)
+            const antiguedadSelSide = document.querySelector('select[data-key="antiguedad"]');
+            const antiguedadRaw = antiguedadSelSide ? (parseInt(antiguedadSelSide.value) || 0) : 0;
+            const antiguedadMax = antiguedadSelSide ? Math.max(...Array.from(antiguedadSelSide.options).map(o => parseInt(o.value) || 0)) : 0;
+            const antiguedadPercent = antiguedadMax > 0 ? (antiguedadRaw / antiguedadMax) * 100 : 0;
+            const antiguedadWeighted50 = Math.round((antiguedadPercent / 100) * 50); // contribución sobre 50
+            const antiguedadSideDiv = document.getElementById('antiguedadSide');
+            if (antiguedadSideDiv) {
+                antiguedadSideDiv.innerText = `Antigüedad: ${antiguedadRaw} / ${antiguedadMax} — Ponderación 50%: ${antiguedadWeighted50}/50`;
+            }
+
+            // Estado Físico (35%) - calcular crudo y ponderación
+            const estadoKeys = ['carcasa','teclado','pantalla','bateria','usb','carga','hdmi','red','audio','camara'];
+            let estadoRaw = 0, estadoMax = 0;
+            estadoKeys.forEach(k => {
+                const s = document.querySelector(`select[data-key="${k}"]`);
+                if (s) {
+                    estadoRaw += parseInt(s.value) || 0;
+                    estadoMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                }
+            });
+            const estadoPercent = estadoMax > 0 ? (estadoRaw / estadoMax) * 100 : 0;
+            const estadoWeighted35 = Math.round((estadoPercent / 100) * 35);
+            const estadoSideDiv = document.getElementById('estadoSide');
+            if (estadoSideDiv) {
+                estadoSideDiv.innerText = `Estado Físico: ${estadoRaw} / ${estadoMax} — Ponderación 35%: ${estadoWeighted35}/35`;
+            }
+
+            // Rendimiento Interno (15%) - calcular crudo y ponderación
+            const rendimientoKeys = ['enciende','ram','disco','video'];
+            let rendRaw = 0, rendMax = 0;
+            rendimientoKeys.forEach(k => {
+                const s = document.querySelector(`select[data-key="${k}"]`);
+                if (s) {
+                    rendRaw += parseInt(s.value) || 0;
+                    rendMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                }
+            });
+            const rendPercent = rendMax > 0 ? (rendRaw / rendMax) * 100 : 0;
+            const rendWeighted15 = Math.round((rendPercent / 100) * 15);
+            const rendimientoSideDiv = document.getElementById('rendimientoSide');
+            if (rendimientoSideDiv) {
+                rendimientoSideDiv.innerText = `Rend. Interno: ${rendRaw} / ${rendMax} — Ponderación 15%: ${rendWeighted15}/15`;
+            }
+
+            // Calcular y mostrar puntaje ponderado total (max 100)
+            const weightedTotal = (antiguedadWeighted50 || 0) + (estadoWeighted35 || 0) + (rendWeighted15 || 0);
+            const weightedDisplay = document.getElementById('weightedTotalDisplay');
+            if (weightedDisplay) weightedDisplay.innerText = `${weightedTotal}%`;
+            const weightedBadge = document.getElementById('weightedStatusBadge');
+            if (weightedBadge) {
+                weightedBadge.innerText = (weightedTotal >= 50) ? 'CANDIDATO A USO' : (weightedTotal >= 40 ? 'CANDIDATO CON UPGRADE' : 'BAJA TI');
+                if (weightedTotal >= 50) weightedDisplay.className = 'text-5xl font-black text-green-600';
+                else if (weightedTotal >= 40) weightedDisplay.className = 'text-5xl font-black text-yellow-600';
+                else weightedDisplay.className = 'text-5xl font-black text-red-600';
+            }
+
             // LÓGICA DE UPGRADES Y REGLAS DE NEGOCIO
             
             // 1. Regla Disco Duro
@@ -296,9 +375,9 @@
             const bateriaVal = bateriaSel ? bateriaSel.value : null;
             if (bateriaVal === "10") {
                 messages.push({type: 'info', text: 'Batería excelente, poco uso.'});
-            } else if (bateriaVal === "7") {
+            } else if (bateriaVal === "6") {
                 messages.push({type: 'info', text: 'Batería buena, degradación leve.'});
-            } else if (bateriaVal === "4") {
+            } else if (bateriaVal === "3") {
                 messages.push({type: 'warning', text: 'Batería Aceptable / Gastada.'});
             } else if (bateriaVal === "1") {
                 messages.push({type: 'warning', text: 'Batería degradada, es recomendable cambiar según antigüedad del equipo.'});
@@ -316,60 +395,60 @@
             // 1.h Regla Estado Físico: Carcasa dañada
             const carcSel = document.querySelector('select[data-key="carcasa"]');
             const carcVal = carcSel ? carcSel.value : null;
-            if (carcVal === "0") {
+            if (parseInt(carcVal) <= 1) {
                 messages.push({type: 'warning', text: 'Carcasa: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.'});
             }
 
             // 1.i Regla Estado Físico: Teclado dañado
             const teclaSel = document.querySelector('select[data-key="teclado"]');
             const teclaVal = teclaSel ? teclaSel.value : null;
-            if (teclaVal === "0") {
+            if (parseInt(teclaVal) <= 1) {
                 messages.push({type: 'warning', text: 'Teclado: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.'});
             }
 
             // 1.j Regla Estado Físico: Pantalla dañada
             const pantSel = document.querySelector('select[data-key="pantalla"]');
             const pantVal = pantSel ? pantSel.value : null;
-            if (pantVal === "0") {
+            if (parseInt(pantVal) <= 1) {
                 messages.push({type: 'warning', text: 'Pantalla: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.'});
             }
 
             // 1.c Regla Puerto de carga delicado
             const cargaSel = document.querySelector('select[data-key="carga"]');
             const cargaVal = cargaSel ? cargaSel.value : null;
-            if (cargaVal === "1") {
+            if (cargaVal === "6") {
                 messages.push({type: 'warning', text: 'Puerto Carga: Puerto principal delicado, revisar para mantención según antigüedad, o mandar a Reciclaje / Préstamo.'});
             }
             // Si el puerto de carga está en mal estado
-            if (cargaVal === "0") {
+            if (cargaVal === "1") {
                 messages.push({type: 'warning', text: 'Puerto Carga: Evaluar antigüedad del equipo para salvar puerto o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.d Regla Puerto Red: No funciona
             const redSel = document.querySelector('select[data-key="red"]');
             const redVal = redSel ? redSel.value : null;
-            if (redVal === "0") {
+            if (redVal === "1") {
                 messages.push({type: 'warning', text: 'Puerto Red: Evaluar antigüedad y estado físico del equipo para salvar Puerto de Red, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.e Regla Puerto HDMI: No funciona
             const hdmiSel = document.querySelector('select[data-key="hdmi"]');
             const hdmiVal = hdmiSel ? hdmiSel.value : null;
-            if (hdmiVal === "0") {
+            if (hdmiVal === "1") {
                 messages.push({type: 'warning', text: 'Puerto HDMI: Evaluar antigüedad y estado físico del equipo para salvar puerto HDMI, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.f Regla Audio: No funciona
             const audioSel = document.querySelector('select[data-key="audio"]');
             const audioVal = audioSel ? audioSel.value : null;
-            if (audioVal === "0") {
+            if (audioVal === "1") {
                 messages.push({type: 'warning', text: 'Audio: Evaluar antigüedad y estado físico del equipo para salvar el estado del audio, o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.g Regla Cámara: No funciona
             const camSel = document.querySelector('select[data-key="camara"]');
             const camVal = camSel ? camSel.value : null;
-            if (camVal === "0") {
+            if (camVal === "1") {
                 messages.push({type: 'warning', text: 'Cámara: Evaluar antigüedad y estado físico del equipo para salvar la cámara, o mandar a Reciclaje / Préstamo.'});
             }
 
@@ -425,19 +504,21 @@
             // 4. Regla Antigüedad - equipos no reasignables
             const antiguedadSel = document.querySelector('select[data-key="antiguedad"]');
             const antiguedadVal = antiguedadSel ? antiguedadSel.value : null;
-            if (antiguedadVal === "2") { // 7 - 8 años
-                messages.push({
-                    type: 'error',
-                    text: 'EQUIPO: Antigüedad 7–8 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje o préstamo. '
-                });
-                noReasignable = true;
-            }
-            if (antiguedadVal === "0") { // 9 - 10 años
-                messages.push({
-                    type: 'error',
-                    text: 'EQUIPO: Antigüedad 9–10 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje o préstamo.'
-                });
-                noReasignable = true;
+            if (antiguedadSel) {
+                if (antiguedadSel.selectedIndex === 3) { // 7 - 8 años
+                    messages.push({
+                        type: 'error',
+                        text: 'EQUIPO: Antigüedad 7–8 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje o préstamo. '
+                    });
+                    noReasignable = true;
+                }
+                if (antiguedadSel.selectedIndex === 4) { // 9 - 10 años
+                    messages.push({
+                        type: 'error',
+                        text: 'EQUIPO: Antigüedad 9–10 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje o préstamo.'
+                    });
+                    noReasignable = true;
+                }
             }
 
             // Renderizar mensajes
@@ -457,18 +538,18 @@
                 });
             }
 
-            // Estado Final
-            totalDisplay.innerText = total;
+            // Estado Final (mostrar total normalizado 0-100)
+            totalDisplay.innerText = displayTotal;
             // Si la antigüedad marca no reasignable, forzar estado de reciclaje
             if (noReasignable) {
                 statusBadge.innerText = "NO REASIGNABLE — RECICLAJE / PRÉSTAMO";
                 statusBadge.className = "mt-4 inline-block status-pill bg-red-700 text-white";
                 totalDisplay.className = "text-6xl font-black text-red-600";
-            } else if (total >= 50) {
+            } else if (displayTotal >= 50) {
                 statusBadge.innerText = "CANDIDATO A USO";
                 statusBadge.className = "mt-4 inline-block status-pill bg-green-500 text-white";
                 totalDisplay.className = "text-6xl font-black text-green-600";
-            } else if (total >= 40) {
+            } else if (displayTotal >= 40) {
                 statusBadge.innerText = "CANDIDATO CON UPGRADE";
                 statusBadge.className = "mt-4 inline-block status-pill bg-yellow-500 text-white";
                 totalDisplay.className = "text-6xl font-black text-yellow-600";
