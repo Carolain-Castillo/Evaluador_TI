@@ -62,7 +62,7 @@
                             <!-- Estado Físico Group -->
                             <tr class="bg-gray-50"><td colspan="3" class="px-4 py-2 text-center text-lg font-extrabold text-gray-700">ESTADO FÍSICO</td></tr>
                             <tr>
-                                <td class="p-4 font-medium italic pl-8">Carcasa</td>
+                                <td class="p-4 font-medium">Carcasa</td>
                                 <td class="p-4">
                                     <select data-key="carcasa" onchange="calculateScore()" class="w-full p-1 border rounded">
                                         <option value="10">Buen estado físico</option>
@@ -73,7 +73,7 @@
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
                             </tr>
                             <tr>
-                                <td class="p-4 font-medium italic pl-8">Teclado</td>
+                                <td class="p-4 font-medium">Teclado</td>
                                 <td class="p-4">
                                     <select data-key="teclado" onchange="calculateScore()" class="w-full p-1 border rounded">
                                         <option value="10">Buen estado físico</option>
@@ -84,7 +84,7 @@
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
                             </tr>
                             <tr>
-                                <td class="p-4 font-medium italic pl-8">Pantalla</td>
+                                <td class="p-4 font-medium">Pantalla</td>
                                 <td class="p-4">
                                     <select data-key="pantalla" onchange="calculateScore()" class="w-full p-1 border rounded">
                                         <option value="10">Buen estado físico</option>
@@ -237,7 +237,7 @@
                     <h2 class="text-sm font-bold text-gray-500 uppercase mb-4 text-center">Desglose Ponderaciones</h2>
                     <div class="grid grid-cols-3 gap-4">
                         <div id="antiguedadSide" class="p-2 rounded border bg-gray-50 flex flex-col items-center">
-                            <div class="text-xs text-gray-700 uppercase font-extrabold text-center">Antigüedad (50%)</div>
+                            <div class="text-xs text-gray-700 uppercase font-extrabold text-center">Años (50%)</div>
                             <div id="antiguedadValue" class="text-lg font-extrabold text-gray-800 mt-2 text-center">0</div>
                             <div class="w-full bg-gray-200 rounded h-3 mt-3">
                                 <div id="antiguedadBar" class="h-3 rounded bg-green-500" style="width:0%"></div>
@@ -385,7 +385,7 @@
                 if (perfil === 'CAD_BIM') {
                     messages.push({type: 'error', text: 'Disco Duro: Insuficiente para CAD/BIM, se requiere aumentar.'});
                 } else {
-                    messages.push({type: 'warning', text: 'Disco Duro: Se requiere mantener o aumentar disco según categoría del equipo.'});
+                    messages.push({type: 'warning', text: 'Disco Duro: Se requiere mantener / aumentar según antigüedad o categoría del equipo.'});
                 }
             }
 
