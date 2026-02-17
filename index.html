@@ -224,28 +224,43 @@
 
             <!-- Dashboard / Results Section -->
             <div class="space-y-6">
-                <!-- Total Score Card -->
+                <!-- Puntaje Ponderado (reemplaza Puntaje Total) -->
                 <div class="card p-6 text-center">
-                    <h2 class="text-sm font-bold text-gray-500 uppercase mb-2">Puntaje Total</h2>
-                    <div id="totalScoreDisplay" class="text-6xl font-black text-gray-800">0</div>
+                    <h2 class="text-sm font-bold text-gray-500 uppercase mb-2">Puntaje Ponderado (0–100%)</h2>
+                    <div id="totalScoreDisplay" class="text-6xl font-black text-gray-800">0%</div>
                     <div id="statusBadge" class="mt-4 inline-block status-pill bg-gray-200 text-gray-600">Calculando...</div>
                     <div id="noEnciendeBadge" class="mt-3 inline-block status-pill bg-red-700 text-white hidden"></div>
                 </div>
 
                 <!-- Desglose de Ponderaciones -->
-                <div class="card p-6 text-center">
-                    <h2 class="text-sm font-bold text-gray-500 uppercase mb-2">Desglose Ponderaciones</h2>
-                    <div id="antiguedadSide" class="text-sm font-bold text-gray-700 mb-2"></div>
-                    <div id="estadoSide" class="text-sm font-bold text-gray-700 mb-2"></div>
-                    <div id="rendimientoSide" class="text-sm font-bold text-gray-700"></div>
+                <div class="card p-6">
+                    <h2 class="text-sm font-bold text-gray-500 uppercase mb-4 text-center">Desglose Ponderaciones</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div id="antiguedadSide" class="p-3 rounded border bg-gray-50">
+                            <div class="text-xs text-gray-500 uppercase font-semibold text-center">Antigüedad (50%)</div>
+                            <div id="antiguedadValue" class="text-2xl font-black text-gray-800 mt-3 text-center">0</div>
+                            <div class="w-full bg-gray-200 rounded h-3 mt-3">
+                                <div id="antiguedadBar" class="h-3 rounded bg-green-500" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <div id="estadoSide" class="p-3 rounded border bg-gray-50">
+                            <div class="text-xs text-gray-500 uppercase font-semibold text-center">Estado Físico (35%)</div>
+                            <div id="estadoValue" class="text-2xl font-black text-gray-800 mt-3 text-center">0</div>
+                            <div class="w-full bg-gray-200 rounded h-3 mt-3">
+                                <div id="estadoBar" class="h-3 rounded bg-green-500" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <div id="rendimientoSide" class="p-3 rounded border bg-gray-50">
+                            <div class="text-xs text-gray-500 uppercase font-semibold text-center">Rend. Interno (15%)</div>
+                            <div id="rendimientoValue" class="text-2xl font-black text-gray-800 mt-3 text-center">0</div>
+                            <div class="w-full bg-gray-200 rounded h-3 mt-3">
+                                <div id="rendimientoBar" class="h-3 rounded bg-green-500" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Puntaje Ponderado (tarjeta separada) -->
-                <div class="card p-6 text-center">
-                    <h2 class="text-sm font-bold text-gray-500 uppercase mb-2">Puntaje Ponderado (0–100%)</h2>
-                    <div id="weightedTotalDisplay" class="text-5xl font-black text-gray-800">0%</div>
-                    <div id="weightedStatusBadge" class="mt-3 inline-block status-pill bg-gray-200 text-gray-600">Calculando...</div>
-                </div>
+                <!-- (tarjeta de puntaje ponderado movida arriba) -->
 
                 <!-- Upgrades / Messages -->
                 <div class="card p-6">
@@ -305,9 +320,13 @@
             const antiguedadMax = antiguedadSelSide ? Math.max(...Array.from(antiguedadSelSide.options).map(o => parseInt(o.value) || 0)) : 0;
             const antiguedadPercent = antiguedadMax > 0 ? (antiguedadRaw / antiguedadMax) * 100 : 0;
             const antiguedadWeighted50 = Math.round((antiguedadPercent / 100) * 50); // contribución sobre 50
-            const antiguedadSideDiv = document.getElementById('antiguedadSide');
-            if (antiguedadSideDiv) {
-                antiguedadSideDiv.innerText = `Antigüedad: ${antiguedadRaw} / ${antiguedadMax} — Ponderación 50%: ${antiguedadWeighted50}/50`;
+            const antiguedadValueEl = document.getElementById('antiguedadValue');
+            const antiguedadBarEl = document.getElementById('antiguedadBar');
+            if (antiguedadValueEl) antiguedadValueEl.innerText = antiguedadRaw;
+            if (antiguedadBarEl) {
+                const w = Math.round(antiguedadPercent);
+                antiguedadBarEl.style.width = w + '%';
+                antiguedadBarEl.className = 'h-3 rounded ' + (w >= 80 ? 'bg-green-500' : (w >= 60 ? 'bg-yellow-400' : 'bg-red-500'));
             }
 
             // Estado Físico (35%) - calcular crudo y ponderación
@@ -322,9 +341,13 @@
             });
             const estadoPercent = estadoMax > 0 ? (estadoRaw / estadoMax) * 100 : 0;
             const estadoWeighted35 = Math.round((estadoPercent / 100) * 35);
-            const estadoSideDiv = document.getElementById('estadoSide');
-            if (estadoSideDiv) {
-                estadoSideDiv.innerText = `Estado Físico: ${estadoRaw} / ${estadoMax} — Ponderación 35%: ${estadoWeighted35}/35`;
+            const estadoValueEl = document.getElementById('estadoValue');
+            const estadoBarEl = document.getElementById('estadoBar');
+            if (estadoValueEl) estadoValueEl.innerText = estadoRaw;
+            if (estadoBarEl) {
+                const w = Math.round(estadoPercent);
+                estadoBarEl.style.width = w + '%';
+                estadoBarEl.className = 'h-3 rounded ' + (w >= 80 ? 'bg-green-500' : (w >= 60 ? 'bg-yellow-400' : 'bg-red-500'));
             }
 
             // Rendimiento Interno (15%) - calcular crudo y ponderación
@@ -339,29 +362,25 @@
             });
             const rendPercent = rendMax > 0 ? (rendRaw / rendMax) * 100 : 0;
             const rendWeighted15 = Math.round((rendPercent / 100) * 15);
-            const rendimientoSideDiv = document.getElementById('rendimientoSide');
-            if (rendimientoSideDiv) {
-                rendimientoSideDiv.innerText = `Rend. Interno: ${rendRaw} / ${rendMax} — Ponderación 15%: ${rendWeighted15}/15`;
+            const rendimientoValueEl = document.getElementById('rendimientoValue');
+            const rendimientoBarEl = document.getElementById('rendimientoBar');
+            if (rendimientoValueEl) rendimientoValueEl.innerText = rendRaw;
+            if (rendimientoBarEl) {
+                const w = Math.round(rendPercent);
+                rendimientoBarEl.style.width = w + '%';
+                rendimientoBarEl.className = 'h-3 rounded ' + (w >= 80 ? 'bg-green-500' : (w >= 60 ? 'bg-yellow-400' : 'bg-red-500'));
             }
 
-            // Calcular y mostrar puntaje ponderado total (max 100)
+            // Calcular puntaje ponderado total (max 100)
             const weightedTotal = (antiguedadWeighted50 || 0) + (estadoWeighted35 || 0) + (rendWeighted15 || 0);
-            const weightedDisplay = document.getElementById('weightedTotalDisplay');
-            if (weightedDisplay) weightedDisplay.innerText = `${weightedTotal}%`;
-            const weightedBadge = document.getElementById('weightedStatusBadge');
-            if (weightedBadge) {
-                weightedBadge.innerText = (weightedTotal >= 50) ? 'CANDIDATO A USO' : (weightedTotal >= 40 ? 'CANDIDATO CON UPGRADE' : 'BAJA TI');
-                if (weightedTotal >= 50) weightedDisplay.className = 'text-5xl font-black text-green-600';
-                else if (weightedTotal >= 40) weightedDisplay.className = 'text-5xl font-black text-yellow-600';
-                else weightedDisplay.className = 'text-5xl font-black text-red-600';
-            }
 
             // LÓGICA DE UPGRADES Y REGLAS DE NEGOCIO
             
             // 1. Regla Disco Duro
             const discoVal = document.getElementById('discoSelect').value;
-            if (discoVal == "2") {
-                messages.push({type: 'warning', text: 'Disco Duro: Cambio a Disco SSD, o mandar a Reciclaje / Préstamo según antigüedad y estado físico del equipo.'});
+            // Si es HDD mecánico (valor '1'), recomendar cambio a SSD
+            if (discoVal === "1") {
+                messages.push({type: 'warning', text: 'Disco Duro: Evaluar antigüedad y estado físico del equipo para cambiar a Disco SSD.'});
             } else if (discoVal == "6") {
                 if (perfil === 'CAD_BIM') {
                     messages.push({type: 'error', text: 'Disco Duro: Insuficiente para CAD/BIM, se requiere aumentar.'});
@@ -538,24 +557,27 @@
                 });
             }
 
-            // Estado Final (mostrar total normalizado 0-100)
-            totalDisplay.innerText = displayTotal;
-            // Si la antigüedad marca no reasignable, forzar estado de reciclaje
+            // Estado Final (mostrar total ponderado 0-100)
+            totalDisplay.innerText = `${weightedTotal}%`;
+            // Rangos:
+            // - >= 60% => CANDIDATO A REASIGNACIÓN
+            // - 40% - 59% => CANDIDATO A PRÉSTAMO
+            // - <= 39% => CANDIDATO A RECICLAJE
             if (noReasignable) {
-                statusBadge.innerText = "NO REASIGNABLE — RECICLAJE / PRÉSTAMO";
+                statusBadge.innerText = "CANDIDATO A RECICLAJE";
                 statusBadge.className = "mt-4 inline-block status-pill bg-red-700 text-white";
                 totalDisplay.className = "text-6xl font-black text-red-600";
-            } else if (displayTotal >= 50) {
-                statusBadge.innerText = "CANDIDATO A USO";
-                statusBadge.className = "mt-4 inline-block status-pill bg-green-500 text-white";
+            } else if (weightedTotal >= 60) {
+                statusBadge.innerText = "CANDIDATO A REASIGNACIÓN";
+                statusBadge.className = "mt-4 inline-block status-pill bg-green-600 text-white";
                 totalDisplay.className = "text-6xl font-black text-green-600";
-            } else if (displayTotal >= 40) {
-                statusBadge.innerText = "CANDIDATO CON UPGRADE";
+            } else if (weightedTotal >= 40) {
+                statusBadge.innerText = "CANDIDATO A PRÉSTAMO";
                 statusBadge.className = "mt-4 inline-block status-pill bg-yellow-500 text-white";
                 totalDisplay.className = "text-6xl font-black text-yellow-600";
             } else {
-                statusBadge.innerText = "BAJA TI";
-                statusBadge.className = "mt-4 inline-block status-pill bg-red-500 text-white";
+                statusBadge.innerText = "CANDIDATO A RECICLAJE";
+                statusBadge.className = "mt-4 inline-block status-pill bg-red-700 text-white";
                 totalDisplay.className = "text-6xl font-black text-red-600";
             }
         }
