@@ -512,12 +512,19 @@
                 messages.push({type: 'info', text: 'GPU limitada.'});
             }
             if (perfil === 'CAD_BIM') {
-                perfilInfo.innerText = "Perfil CAD/BIM requiere GPU dedicada >= 4GB obligatoria para calificar.";
+                perfilInfo.innerText = "Perfil CAD/BIM requiere GPU dedicada ≥ 4GB obligatoria para calificar.";
                 if (parseInt(gpuVal) < 6) { // Menos de 4GB
                     messages.push({type: 'error', text: 'GPU: Insuficiente para CAD/BIM.'});
                 }
             } else {
-                perfilInfo.innerText = "Los usuarios Administrativos no requieren GPU dedicada obligatoria.";
+                // Para perfiles administrativos/ejecutivos, mostrar mensaje específico
+                // cuando la tarjeta de video NO TIENE GPU dedicada. Mantener siempre
+                // el mensaje base y añadir el mensaje ejecutivo si aplica.
+                if (gpuVal === "0") {
+                    perfilInfo.innerHTML = 'Administrativos: No requieren GPU dedicada obligatoria.<br><br>Ejecutivo: Requiere GPU dedicada ≥ 2GB según su antigüedad y pulgadas.';
+                } else {
+                    perfilInfo.innerText = 'Administrativos: No requieren GPU dedicada obligatoria.';
+                }
             }
 
             // 4. Regla Antigüedad - equipos no reasignables
