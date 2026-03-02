@@ -24,10 +24,10 @@
 
                 <div class="mt-4 space-y-2 max-w-xl">
                     <label class="block text-sm font-semibold text-gray-700">Buscar por número de activo</label>
-                    <input id="searchActivo" type="text" placeholder="Ej: ACT-12345" class="w-64 md:w-96 p-2 border rounded bg-white text-gray-700" />
+                    <input id="searchActivo" type="text" placeholder="Ej: PC-12345" class="w-64 md:w-96 p-2 border rounded bg-white text-gray-700" />
 
                     <label class="block text-sm font-semibold text-gray-700">Buscar por número de serie</label>
-                    <input id="searchSerial" type="text" placeholder="Ej: SN123456789" class="w-64 md:w-96 p-2 border rounded bg-white text-gray-700" />
+                    <input id="searchSerial" type="text" placeholder="Ej: PF12345" class="w-64 md:w-96 p-2 border rounded bg-white text-gray-700" />
 
                     
                 </div>
@@ -418,7 +418,7 @@
             const usbSel = document.querySelector('select[data-key="usb"]');
             const usbVal = usbSel ? usbSel.value : null;
             if (usbVal === "1") {
-                messages.push({type: 'warning', text: 'USB: Evaluar antigüedad y estado físico del equipo para salvar puerto USB.'});
+                messages.push({type: 'warning', text: 'USB: Evaluar antigüedad y estado físico del equipo para salvar puerto USB o mandar a Reciclaje / Préstamo.'});
             }
 
             // 1.h Regla Estado Físico: Carcasa dañada
