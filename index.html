@@ -262,7 +262,7 @@
                                 <td class="p-4">
                                     <select id="discoSelect" data-key="disco" onchange="calculateScore()"
                                         class="w-full p-1 border rounded">
-                                        <option value="10">SSD > 500 GB</option>
+                                        <option value="10">SSD ≥ 500 GB</option>
                                         <option value="6">SSD ≤ 500 GB</option>
                                         <option value="1">HDD Mecánico</option>
                                     </select>
@@ -592,14 +592,9 @@
                     messages.push({ type: 'error', text: 'GPU: Insuficiente para CAD/BIM.' });
                 }
             } else {
-                // Para perfiles administrativos/ejecutivos, mostrar mensaje específico
-                // cuando la tarjeta de video NO TIENE GPU dedicada. Mantener siempre
-                // el mensaje base y añadir el mensaje ejecutivo si aplica.
-                if (gpuVal === "0") {
-                    perfilInfo.innerHTML = 'Administrativos: No requieren GPU dedicada obligatoria.<br><br>Ejecutivo: Requiere GPU dedicada ≥ 2GB según su antigüedad y pulgadas.';
-                } else {
-                    perfilInfo.innerText = 'Administrativos: No requieren GPU dedicada obligatoria.';
-                }
+                // Para perfiles administrativos/ejecutivos: mostrar siempre el mensaje
+                // base y la nota para Ejecutivo, independientemente del valor de GPU.
+                perfilInfo.innerHTML = 'Administrativos: No requieren GPU dedicada obligatoria.<br><br>Ejecutivo: Requiere GPU dedicada ≥ 2GB según su antigüedad y pulgadas.';
             }
 
             // 4. Regla Antigüedad - equipos no reasignables
