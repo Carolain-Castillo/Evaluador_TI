@@ -262,7 +262,7 @@
                                 <td class="p-4">
                                     <select id="discoSelect" data-key="disco" onchange="calculateScore()"
                                         class="w-full p-1 border rounded">
-                                        <option value="10">SSD ≥ 500 GB</option>
+                                        <option value="10">SSD > 500 GB</option>
                                         <option value="6">SSD ≤ 500 GB</option>
                                         <option value="1">HDD Mecánico</option>
                                     </select>
@@ -426,7 +426,14 @@
             }
 
             // Rendimiento Interno (15%) - calcular crudo y ponderación
-            const rendimientoKeys = ['enciende', 'ram', 'disco', 'video'];
+            // Si el perfil es Administrativo/Ejecutivo y la tarjeta de video es "No tiene" (valor '0'),
+            // no penalizar por ausencia de GPU: excluir 'video' del cálculo de rendimiento.
+            const gpuSelForDecision = document.querySelector('select[data-key="video"]') || document.getElementById('gpuSelect');
+            const gpuValNow = gpuSelForDecision ? gpuSelForDecision.value : null;
+            let rendimientoKeys = ['enciende', 'ram', 'disco', 'video'];
+            if (perfil === 'ADMIN' && (gpuValNow === "0" || gpuValNow === 0)) {
+                rendimientoKeys = ['enciende', 'ram', 'disco'];
+            }
             let rendRaw = 0, rendMax = 0;
             rendimientoKeys.forEach(k => {
                 const s = document.querySelector(`select[data-key="${k}"]`);
