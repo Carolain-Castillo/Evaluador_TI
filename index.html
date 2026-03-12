@@ -46,14 +46,18 @@
                 <h1 class="text-3xl font-bold text-gray-800">Evaluador TI</h1>
                 <p class="text-gray-500">Sistema de evaluación por categoría de activo</p>
 
-                <div class="mt-4 space-y-2 max-w-xl">
-                    <label class="block text-sm font-semibold text-gray-700">Buscar por número de activo</label>
-                    <input id="searchActivo" type="text" placeholder="Ej: PC-12345"
-                        class="w-64 md:w-96 p-2 border rounded bg-white text-gray-700" />
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl">
+                    <div class="flex flex-col">
+                        <label class="block text-sm font-semibold text-gray-700">Número de activo</label>
+                        <input id="searchActivo" type="text" placeholder="Ej: PC-12345"
+                            class="w-full p-2 border rounded bg-white text-gray-700" />
+                    </div>
 
-                    <label class="block text-sm font-semibold text-gray-700">Buscar por número de serie</label>
-                    <input id="searchSerial" type="text" placeholder="Ej: PF12345"
-                        class="w-64 md:w-96 p-2 border rounded bg-white text-gray-700" />
+                    <div class="flex flex-col">
+                        <label class="block text-sm font-semibold text-gray-700">Número de serie</label>
+                        <input id="searchSerial" type="text" placeholder="Ej: PF12345"
+                            class="w-full p-2 border rounded bg-white text-gray-700" />
+                    </div>
                 </div>
             </div>
 
@@ -67,7 +71,7 @@
                     </select>
                 </div>
 
-                <!-- ✅ NUEVO BOTÓN PDF -->
+                <!-- BOTÓN PDF -->
                 <button onclick="descargarPDF()"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg shadow">
                     Descargar Evaluación TI
