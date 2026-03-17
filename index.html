@@ -492,7 +492,8 @@
                 selects[s.dataset.key || s.id] = {
                     value: s.value,
                     options: Array.from(s.options).map(o => ({ value: o.value, text: o.text })),
-                    selectedText: s.options[s.selectedIndex] ? s.options[s.selectedIndex].text : ''
+                    selectedText: s.options[s.selectedIndex] ? s.options[s.selectedIndex].text : '',
+                    selectedIndex: s.selectedIndex
                 };
             });
             const perfilSelect = document.getElementById('perfilUsuario');
