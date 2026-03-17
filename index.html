@@ -364,280 +364,85 @@
         </div>
     </div>
 
-    <script>
-        function calculateScore() {
-            const selects = document.querySelectorAll('#tablaEvaluacion select');
-            const upgradeContainer = document.getElementById('upgradeContainer');
-            const totalDisplay = document.getElementById('totalScoreDisplay');
-            const statusBadge = document.getElementById('statusBadge');
+    <script type="module">
+        import { evaluate, generatePdfHtml } from './src/evaluator_core.js';
+
+        // Construir orden de la tabla para detalle
+        const tableOrder = Array.from(document.querySelectorAll('#tablaEvaluacion tr'))
+            .map(row => {
+                const td = row.querySelector('td');
+                if (!td) return null;
+                const select = row.querySelector('select');
+                if (!select) return null;
+                return { key: select.dataset.key || select.id || null, label: td.innerText.trim() };
+            }).filter(Boolean);
+
+        window.calculateScore = function() {
+            const selectEls = document.querySelectorAll('#tablaEvaluacion select');
+            const selects = {};
+            selectEls.forEach(s => {
+                selects[s.dataset.key || s.id] = {
+                    value: s.value,
+                    options: Array.from(s.options).map(o => ({ value: o.value, text: o.text })),
+                    selectedText: s.options[s.selectedIndex] ? s.options[s.selectedIndex].text : '',
+                    selectedIndex: s.selectedIndex
+                };
+                const cell = s.closest('tr') && s.closest('tr').querySelector('.score-val');
+                if (cell) cell.innerText = s.value;
+            });
+
             const perfil = document.getElementById('perfilUsuario').value;
             const perfilInfo = document.getElementById('perfilInfo');
 
-            let total = 0;
-            let messages = [];
-            let noReasignable = false;
+            const state = { perfil, selects, tableOrder };
+            const result = evaluate(state);
 
-            // Sumar puntos
-            selects.forEach(sel => {
-                const val = parseInt(sel.value);
-                total += val;
-                // Actualizar visualmente el puntaje por fila
-                sel.closest('tr').querySelector('.score-val').innerText = val;
-            });
-
-            // Calcular máximo posible dinámicamente (para normalizar a 0-100)
-            let maxPossible = 0;
-            selects.forEach(sel => {
-                const opts = Array.from(sel.options).map(o => parseInt(o.value) || 0);
-                if (opts.length) maxPossible += Math.max(...opts);
-            });
-            const displayTotal = maxPossible > 0 ? Math.round((total / maxPossible) * 100) : 0;
-
-            // Guardar total crudo de Antigüedad y calcular su ponderación al 50% (sin alterar los puntos seleccionados)
-            const antiguedadSelSide = document.querySelector('select[data-key="antiguedad"]');
-            const antiguedadRaw = antiguedadSelSide ? (parseInt(antiguedadSelSide.value) || 0) : 0;
-            const antiguedadMax = antiguedadSelSide ? Math.max(...Array.from(antiguedadSelSide.options).map(o => parseInt(o.value) || 0)) : 0;
-            const antiguedadPercent = antiguedadMax > 0 ? (antiguedadRaw / antiguedadMax) * 100 : 0;
-            const antiguedadWeighted50 = Math.round((antiguedadPercent / 100) * 50); // contribución sobre 50
+            // Actualizar barras y valores
             const antiguedadValueEl = document.getElementById('antiguedadValue');
+            if (antiguedadValueEl) antiguedadValueEl.innerText = result.antig.raw;
             const antiguedadBarEl = document.getElementById('antiguedadBar');
-            if (antiguedadValueEl) antiguedadValueEl.innerText = antiguedadRaw;
             if (antiguedadBarEl) {
-                const w = Math.round(antiguedadPercent);
+                const w = Math.round(result.antig.percent);
                 antiguedadBarEl.style.width = w + '%';
                 antiguedadBarEl.className = 'h-3 rounded ' + (w >= 80 ? 'bg-green-500' : (w >= 60 ? 'bg-yellow-400' : 'bg-red-500'));
             }
 
-            // Estado Físico (35%) - calcular crudo y ponderación
-            const estadoKeys = ['carcasa', 'teclado', 'pantalla', 'bateria', 'usb', 'carga', 'hdmi', 'red', 'audio', 'camara'];
-            let estadoRaw = 0, estadoMax = 0;
-            estadoKeys.forEach(k => {
-                const s = document.querySelector(`select[data-key="${k}"]`);
-                if (s) {
-                    estadoRaw += parseInt(s.value) || 0;
-                    estadoMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
-                }
-            });
-            const estadoPercent = estadoMax > 0 ? (estadoRaw / estadoMax) * 100 : 0;
-            const estadoWeighted35 = Math.round((estadoPercent / 100) * 35);
             const estadoValueEl = document.getElementById('estadoValue');
+            if (estadoValueEl) estadoValueEl.innerText = result.estado.raw;
             const estadoBarEl = document.getElementById('estadoBar');
-            if (estadoValueEl) estadoValueEl.innerText = estadoRaw;
             if (estadoBarEl) {
-                const w = Math.round(estadoPercent);
+                const w = Math.round(result.estado.percent);
                 estadoBarEl.style.width = w + '%';
                 estadoBarEl.className = 'h-3 rounded ' + (w >= 80 ? 'bg-green-500' : (w >= 60 ? 'bg-yellow-400' : 'bg-red-500'));
             }
 
-            // Rendimiento Interno (15%) - calcular crudo y ponderación
-            // Si el perfil es Administrativo/Ejecutivo y la tarjeta de video es "No tiene" (valor '0'),
-            // no penalizar por ausencia de GPU: excluir 'video' del cálculo de rendimiento.
-            const gpuSelForDecision = document.querySelector('select[data-key="video"]') || document.getElementById('gpuSelect');
-            const gpuValNow = gpuSelForDecision ? gpuSelForDecision.value : null;
-            let rendimientoKeys = ['enciende', 'ram', 'disco', 'video'];
-            if (perfil === 'ADMIN' && (gpuValNow === "0" || gpuValNow === 0)) {
-                rendimientoKeys = ['enciende', 'ram', 'disco'];
-            }
-            let rendRaw = 0, rendMax = 0;
-            rendimientoKeys.forEach(k => {
-                const s = document.querySelector(`select[data-key="${k}"]`);
-                if (s) {
-                    rendRaw += parseInt(s.value) || 0;
-                    rendMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
-                }
-            });
-            const rendPercent = rendMax > 0 ? (rendRaw / rendMax) * 100 : 0;
-            const rendWeighted15 = Math.round((rendPercent / 100) * 15);
             const rendimientoValueEl = document.getElementById('rendimientoValue');
+            if (rendimientoValueEl) rendimientoValueEl.innerText = result.rendimiento.raw;
             const rendimientoBarEl = document.getElementById('rendimientoBar');
-            if (rendimientoValueEl) rendimientoValueEl.innerText = rendRaw;
             if (rendimientoBarEl) {
-                const w = Math.round(rendPercent);
+                const w = Math.round(result.rendimiento.percent);
                 rendimientoBarEl.style.width = w + '%';
                 rendimientoBarEl.className = 'h-3 rounded ' + (w >= 80 ? 'bg-green-500' : (w >= 60 ? 'bg-yellow-400' : 'bg-red-500'));
             }
 
-            // Calcular puntaje ponderado total (max 100)
-            const weightedTotal = (antiguedadWeighted50 || 0) + (estadoWeighted35 || 0) + (rendWeighted15 || 0);
-
-            // LÓGICA DE UPGRADES Y REGLAS DE NEGOCIO
-
-            // 1. Regla Disco Duro
-            const discoVal = document.getElementById('discoSelect').value;
-            // Si es HDD mecánico (valor '1'), recomendar cambio a SSD
-            if (discoVal === "1") {
-                messages.push({ type: 'warning', text: 'Disco Duro: Evaluar antigüedad y estado físico del equipo para cambiar a Disco SSD.' });
-            } else if (discoVal == "6") {
-                if (perfil === 'CAD_BIM') {
-                    messages.push({ type: 'error', text: 'Disco Duro: Insuficiente para CAD/BIM, se requiere aumentar.' });
-                } else {
-                    messages.push({ type: 'warning', text: 'Disco Duro: Se requiere mantener / aumentar según antigüedad o categoría del equipo.' });
-                }
-            }
-
-            // Nueva regla Estado Batería: mensajes por rango y recomendaciones
-            const bateriaSel = document.querySelector('select[data-key="bateria"]');
-            const bateriaVal = bateriaSel ? bateriaSel.value : null;
-            if (bateriaVal === "10") {
-                messages.push({ type: 'info', text: 'Batería excelente, poco uso.' });
-            } else if (bateriaVal === "6") {
-                messages.push({ type: 'info', text: 'Batería buena, degradación leve.' });
-            } else if (bateriaVal === "3") {
-                messages.push({ type: 'warning', text: 'Batería Aceptable / Gastada.' });
-            } else if (bateriaVal === "1") {
-                messages.push({ type: 'warning', text: 'Batería degradada, es recomendable cambiar según antigüedad del equipo.' });
-            } else if (bateriaVal === "0") {
-                messages.push({ type: 'critical', text: 'Batería muy gastada, es recomendable cambiar según antigüedad del equipo.' });
-            }
-
-            // 1.b Regla Puertos USB: algunos con fallas
-            const usbSel = document.querySelector('select[data-key="usb"]');
-            const usbVal = usbSel ? usbSel.value : null;
-            if (usbVal === "1") {
-                messages.push({ type: 'warning', text: 'USB: Evaluar antigüedad y estado físico del equipo para salvar puerto USB o mandar a Reciclaje / Préstamo.' });
-            }
-
-            // 1.h Regla Estado Físico: Carcasa dañada
-            const carcSel = document.querySelector('select[data-key="carcasa"]');
-            const carcVal = carcSel ? carcSel.value : null;
-            if (parseInt(carcVal) <= 1) {
-                messages.push({ type: 'warning', text: 'Carcasa: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.' });
-            }
-
-            // 1.i Regla Estado Físico: Teclado dañado
-            const teclaSel = document.querySelector('select[data-key="teclado"]');
-            const teclaVal = teclaSel ? teclaSel.value : null;
-            if (parseInt(teclaVal) <= 1) {
-                messages.push({ type: 'warning', text: 'Teclado: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.' });
-            }
-
-            // 1.j Regla Estado Físico: Pantalla dañada
-            const pantSel = document.querySelector('select[data-key="pantalla"]');
-            const pantVal = pantSel ? pantSel.value : null;
-            if (parseInt(pantVal) <= 1) {
-                messages.push({ type: 'warning', text: 'Pantalla: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.' });
-            }
-
-            // 1.c Regla Puerto de carga delicado
-            const cargaSel = document.querySelector('select[data-key="carga"]');
-            const cargaVal = cargaSel ? cargaSel.value : null;
-            if (cargaVal === "6") {
-                messages.push({ type: 'warning', text: 'Puerto Carga: Puerto principal delicado, revisar para mantención según antigüedad, o mandar a Reciclaje / Préstamo.' });
-            }
-            // Si el puerto de carga está en mal estado
-            if (cargaVal === "1") {
-                messages.push({ type: 'warning', text: 'Puerto Carga: Evaluar antigüedad del equipo para salvar puerto o mandar a Reciclaje / Préstamo.' });
-            }
-
-            // 1.d Regla Puerto Red: No funciona
-            const redSel = document.querySelector('select[data-key="red"]');
-            const redVal = redSel ? redSel.value : null;
-            if (redVal === "1") {
-                messages.push({ type: 'warning', text: 'Puerto Red: Evaluar antigüedad y estado físico del equipo para salvar Puerto de Red, o mandar a Reciclaje / Préstamo.' });
-            }
-
-            // 1.e Regla Puerto HDMI: No funciona
-            const hdmiSel = document.querySelector('select[data-key="hdmi"]');
-            const hdmiVal = hdmiSel ? hdmiSel.value : null;
-            if (hdmiVal === "1") {
-                messages.push({ type: 'warning', text: 'Puerto HDMI: Evaluar antigüedad y estado físico del equipo para salvar puerto HDMI, o mandar a Reciclaje / Préstamo.' });
-            }
-
-            // 1.f Regla Audio: No funciona
-            const audioSel = document.querySelector('select[data-key="audio"]');
-            const audioVal = audioSel ? audioSel.value : null;
-            if (audioVal === "1") {
-                messages.push({ type: 'warning', text: 'Audio: Evaluar antigüedad y estado físico del equipo para salvar el estado del audio, o mandar a Reciclaje / Préstamo.' });
-            }
-
-            // 1.g Regla Cámara: No funciona
-            const camSel = document.querySelector('select[data-key="camara"]');
-            const camVal = camSel ? camSel.value : null;
-            if (camVal === "1") {
-                messages.push({ type: 'warning', text: 'Cámara: Evaluar antigüedad y estado físico del equipo para salvar la cámara, o mandar a Reciclaje / Préstamo.' });
-            }
-
-            // Regla ¿Enciende?: No enciende -> mandar a Reciclaje
-            const enciendeSel = document.querySelector('select[data-key="enciende"]');
-            const enciendeVal = enciendeSel ? enciendeSel.value : null;
-            if (enciendeVal === "0") {
-                messages.push({ type: 'error', text: '¿Enciende?: No enciende, mandar equipo a Reciclaje.' });
-                // Forzar no reasignable si no enciende
-                noReasignable = true;
-            }
-
-            // Mostrar/ocultar badge rojo destacado bajo Puntaje Total si no enciende
-            const noEnciendeBadge = document.getElementById('noEnciendeBadge');
-            if (noEnciendeBadge) {
-                if (enciendeVal === "0") {
-                    noEnciendeBadge.innerText = 'EQUIPO NO ENCIENDE';
-                    noEnciendeBadge.classList.remove('hidden');
-                } else {
-                    noEnciendeBadge.innerText = '';
-                    noEnciendeBadge.classList.add('hidden');
-                }
-            }
-
-            // 2. Regla RAM según Perfil
-            const ramVal = document.getElementById('ramSelect').value; // 10:32, 6:16, 4:8, 2:4
-            if (perfil === 'ADMIN' && parseInt(ramVal) < 6) {
-                messages.push({ type: 'info', text: 'Upgrade RAM: Subir ≥ a 16GB para mejor desempeño.' });
-            }
-            if (perfil === 'CAD_BIM' && parseInt(ramVal) < 6) {
-                messages.push({ type: 'critical', text: 'Memoria RAM: Upgrade de RAM obligatorio para CAD/BIM a ≥ 16GB.' });
-            }
-            // Si no tiene RAM o hay falla, sugerir evaluar según antigüedad/estado
-            if (ramVal === "0") {
-                messages.push({ type: 'warning', text: 'Evaluar antigüedad y estado físico del equipo para colocar RAM o mandar equipo a Reciclaje / Préstamo.' });
-            }
-
-            // 3. Regla GPU para CAD/BIM
+            // Mantener exactamente la lógica de perfilInfo (no cambiar textos)
             const gpuVal = document.getElementById('gpuSelect').value;
-            // Mensaje adicional para GPU integrada (si existiera)
-            if (gpuVal === "2") {
-                messages.push({ type: 'info', text: 'GPU limitada.' });
-            }
             if (perfil === 'CAD_BIM') {
                 perfilInfo.innerText = "Perfil CAD/BIM requiere GPU dedicada ≥ 4GB obligatoria para calificar.";
-                if (parseInt(gpuVal) < 6) { // Menos de 4GB
-                    messages.push({ type: 'error', text: 'GPU: Insuficiente para CAD/BIM.' });
-                }
             } else {
-                // Para perfiles administrativos/ejecutivos: mostrar siempre el mensaje
-                // base y la nota para Ejecutivo, independientemente del valor de GPU.
                 perfilInfo.innerHTML = 'Administrativos: No requieren GPU dedicada obligatoria.<br><br>Ejecutivo: Requiere GPU dedicada ≥ 2GB según su antigüedad y pulgadas.';
             }
 
-            // 4. Regla Antigüedad - equipos no reasignables
-            const antiguedadSel = document.querySelector('select[data-key="antiguedad"]');
-            const antiguedadVal = antiguedadSel ? antiguedadSel.value : null;
-            if (antiguedadSel) {
-                if (antiguedadSel.selectedIndex === 3) { // 7 - 8 años
-                    messages.push({
-                        type: 'error',
-                        text: 'EQUIPO: Antigüedad 7–8 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje o préstamo. '
-                    });
-                    noReasignable = true;
-                }
-                if (antiguedadSel.selectedIndex === 4) { // 9 - 10 años
-                    messages.push({
-                        type: 'error',
-                        text: 'EQUIPO: Antigüedad 9–10 años — Fin de vida útil operativa. No apto para reasignación. Priorizar reciclaje o préstamo.'
-                    });
-                    noReasignable = true;
-                }
-            }
-
-            // Renderizar mensajes
+            // Renderizar mensajes en UI
+            const upgradeContainer = document.getElementById('upgradeContainer');
             upgradeContainer.innerHTML = '';
-            if (messages.length === 0) {
+            if (!result.messages || result.messages.length === 0) {
                 upgradeContainer.innerHTML = '<p class="text-green-500 text-sm font-medium">✓ Equipo cumple requerimientos base.</p>';
             } else {
-                messages.forEach(msg => {
+                result.messages.forEach(msg => {
                     let colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-200';
                     if (msg.type === 'critical' || msg.type === 'error') colorClass = 'bg-red-100 text-red-800 border-red-200';
                     if (msg.type === 'info') colorClass = 'bg-blue-100 text-blue-800 border-blue-200';
-
                     const div = document.createElement('div');
                     div.className = `p-3 rounded border text-xs font-bold ${colorClass}`;
                     div.innerText = msg.text;
@@ -645,153 +450,73 @@
                 });
             }
 
-            // Estado Final (mostrar total ponderado 0-100)
-            totalDisplay.innerText = `${weightedTotal}%`;
-            // Rangos:
-            // - >= 55% => CANDIDATO A REASIGNACIÓN
-            // - 40% - 54% => CANDIDATO A PRÉSTAMO
-            // - <= 39% => CANDIDATO A RECICLAJE
-            if (noReasignable) {
-                statusBadge.innerText = "CANDIDATO A RECICLAJE";
-                statusBadge.className = "mt-4 inline-block status-pill bg-red-700 text-white";
-                totalDisplay.className = "text-6xl font-black text-red-600";
-            } else if (weightedTotal >= 55) {
-                statusBadge.innerText = "CANDIDATO A REASIGNACIÓN";
-                statusBadge.className = "mt-4 inline-block status-pill bg-green-600 text-white";
-                totalDisplay.className = "text-6xl font-black text-green-600";
-            } else if (weightedTotal >= 40) {
-                statusBadge.innerText = "CANDIDATO A PRÉSTAMO";
-                statusBadge.className = "mt-4 inline-block status-pill bg-yellow-500 text-white";
-                totalDisplay.className = "text-6xl font-black text-yellow-600";
+            // Mostrar estado final y badges
+            const totalDisplay = document.getElementById('totalScoreDisplay');
+            const statusBadge = document.getElementById('statusBadge');
+            totalDisplay.innerText = `${result.weightedTotal}%`;
+            if (result.noReasignable) {
+                statusBadge.innerText = result.status;
+                statusBadge.className = 'mt-4 inline-block status-pill bg-red-700 text-white';
+                totalDisplay.className = 'text-6xl font-black text-red-600';
+            } else if (result.weightedTotal >= 55) {
+                statusBadge.innerText = result.status;
+                statusBadge.className = 'mt-4 inline-block status-pill bg-green-600 text-white';
+                totalDisplay.className = 'text-6xl font-black text-green-600';
+            } else if (result.weightedTotal >= 40) {
+                statusBadge.innerText = result.status;
+                statusBadge.className = 'mt-4 inline-block status-pill bg-yellow-500 text-white';
+                totalDisplay.className = 'text-6xl font-black text-yellow-600';
             } else {
-                statusBadge.innerText = "CANDIDATO A RECICLAJE";
-                statusBadge.className = "mt-4 inline-block status-pill bg-red-700 text-white";
-                totalDisplay.className = "text-6xl font-black text-red-600";
+                statusBadge.innerText = result.status;
+                statusBadge.className = 'mt-4 inline-block status-pill bg-red-700 text-white';
+                totalDisplay.className = 'text-6xl font-black text-red-600';
             }
-        }
 
+            // Badge NO ENCIENDE
+            const noEnciendeBadge = document.getElementById('noEnciendeBadge');
+            if (noEnciendeBadge) {
+                const enciendeSel = document.querySelector('select[data-key="enciende"]');
+                const encVal = enciendeSel ? enciendeSel.value : null;
+                if (encVal === '0') { noEnciendeBadge.innerText = 'EQUIPO NO ENCIENDE'; noEnciendeBadge.classList.remove('hidden'); }
+                else { noEnciendeBadge.innerText = ''; noEnciendeBadge.classList.add('hidden'); }
+            }
+        };
 
-        // ===============================
-        // 📄 GENERAR PDF PROFESIONAL
-        // ===============================
-        function descargarPDF() {
+        window.descargarPDF = function() {
+            // actualizar datos
+            calculateScore();
 
-            calculateScore(); // asegurar datos actualizados
+            const selectEls = document.querySelectorAll('#tablaEvaluacion select');
+            const selects = {};
+            selectEls.forEach(s => {
+                selects[s.dataset.key || s.id] = {
+                    value: s.value,
+                    options: Array.from(s.options).map(o => ({ value: o.value, text: o.text })),
+                    selectedText: s.options[s.selectedIndex] ? s.options[s.selectedIndex].text : ''
+                };
+            });
+            const perfilSelect = document.getElementById('perfilUsuario');
+            const perfil = perfilSelect.value;
+            const state = { perfil, selects, tableOrder };
+            const result = evaluate(state);
 
-            const activo = document.getElementById("searchActivo").value || "No especificado";
-            const serie = document.getElementById("searchSerial").value || "No especificado";
-            const perfilSelect = document.getElementById("perfilUsuario");
+            const activo = document.getElementById('searchActivo').value || 'No especificado';
+            const serie = document.getElementById('searchSerial').value || 'No especificado';
             const perfilTexto = perfilSelect.options[perfilSelect.selectedIndex].text;
 
-            const puntaje = document.getElementById("totalScoreDisplay").innerText;
-            const estadoFinal = document.getElementById("statusBadge").innerText;
-
-            const antiguedad = document.getElementById("antiguedadValue").innerText;
-            const estadoFisico = document.getElementById("estadoValue").innerText;
-            const rendimiento = document.getElementById("rendimientoValue").innerText;
-
-            // Obtener recomendaciones visibles
-            const recomendaciones = Array.from(document.querySelectorAll("#upgradeContainer div"))
-                .map(div => `<li>${div.innerText}</li>`).join("");
-
-            // Obtener tabla completa con selección
-            let tablaHTML = "";
-            document.querySelectorAll("#tablaEvaluacion tr").forEach(row => {
-                const cols = row.querySelectorAll("td");
-                if (cols.length === 3) {
-                    const criterio = cols[0].innerText;
-                    const select = cols[1].querySelector("select");
-                    if (select) {
-                        const condicion = select.options[select.selectedIndex].text;
-                        const puntos = cols[2].innerText;
-                        tablaHTML += `
-                    <tr>
-                        <td>${criterio}</td>
-                        <td>${condicion}</td>
-                        <td style="text-align:center;">${puntos}</td>
-                    </tr>
-                `;
-                    }
-                }
-            });
-
-            const fecha = new Date().toLocaleString("es-CL");
-
-            const contenido = `
-    <div style="font-family: Inter, sans-serif; padding:25px;">
-        <h1 style="font-size:28px; font-weight:800; color:#1e3a8a;">Evaluador TI</h1>
-        <p style="color:#6b7280;">Reporte técnico generado automáticamente</p>
-        <p style="font-size:12px; color:#6b7280;">Fecha de generación: ${fecha}</p>
-
-        <div style="display:flex; gap:20px; align-items:stretch; margin-top:30px;">
-            <div style="flex:1; padding:20px; border-radius:12px; background:#f9fafb; display:flex; flex-direction:column; justify-content:center;">
-                <h2 style="font-weight:700; margin-bottom:10px;">Información del Activo</h2>
-                <p><strong>N° Activo:</strong> ${activo}</p>
-                <p><strong>N° Serie:</strong> ${serie}</p>
-                <p><strong>Perfil:</strong> ${perfilTexto}</p>
-            </div>
-
-            <div style="width:320px; padding:20px; border-radius:12px; background:#e0f2fe; display:flex; flex-direction:column; justify-content:center;">
-                <h2 style="font-weight:700; margin:0 0 8px 0;">Resultado Final</h2>
-                <p style="font-size:26px; font-weight:800; margin:0;">${puntaje}</p>
-                <p style="font-weight:700; margin-top:8px;">${estadoFinal}</p>
-            </div>
-        </div>
-
-        <div style="margin-top:20px;">
-            <h2 style="font-weight:700;">Desglose de Ponderaciones</h2>
-            <ul>
-                <li>Antigüedad (50%): ${antiguedad}</li>
-                <li>Estado Físico (35%): ${estadoFisico}</li>
-                <li>Rendimiento Interno (15%): ${rendimiento}</li>
-            </ul>
-        </div>
-
-        <div style="margin-top:20px;">
-            <h2 style="font-weight:700;">Recomendaciones TI</h2>
-            <ul>${recomendaciones || "<li>Sin observaciones</li>"}</ul>
-        </div>
-
-        <div style="margin-top:20px;">
-            <h2 style="font-weight:700;">Detalle de Evaluación</h2>
-            <table style="width:100%; border-collapse:collapse; font-size:10px;">
-                <thead>
-                    <tr style="background:#1e293b; color:white;">
-                        <th style="padding:8px;">Criterio</th>
-                        <th style="padding:8px;">Condición</th>
-                        <th style="padding:8px;">Pts</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${tablaHTML}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    `;
+            const contenido = generatePdfHtml(result, { activo, serie, perfilTexto });
 
             const opt = {
-                margin: 0.3, // menos margen
+                margin: 0.3,
                 filename: `Evaluacion_TI_${activo}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 1.5, // bajar escala evita que crezca demasiado
-                    useCORS: true
-                },
-                jsPDF: {
-                    unit: 'mm',
-                    format: 'a4',  // más compacto que letter
-                    orientation: 'portrait'
-                },
+                html2canvas: { scale: 1.5, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
-
             html2pdf().set(opt).from(contenido).save();
-        }
+        };
 
-
-
-        // Ejecutar al cargar
         window.onload = calculateScore;
     </script>
 </body>
