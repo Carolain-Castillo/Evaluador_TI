@@ -43,8 +43,13 @@
         <!-- HEADER -->
         <div class="mb-8 text-center md:text-left flex flex-col md:flex-row justify-between items-end">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">Evaluador TI</h1>
-                <p class="text-gray-500">Sistema de evaluación por categoría de activo</p>
+                <div class="flex items-center">
+                    <img id="siteLogo" src="images/logo cyd.png" alt="CyD Ingenieria" class="w-20 h-auto mr-4" />
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">Evaluador TI</h1>
+                        <p class="text-gray-500">Sistema de evaluación por categoría de activo</p>
+                    </div>
+                </div>
 
                 <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl">
                     <div class="flex flex-col">
@@ -719,9 +724,16 @@
 
             const contenido = `
     <div style="font-family: Inter, sans-serif; padding:25px;">
-        <h1 style="font-size:28px; font-weight:800; color:#1e3a8a;">Evaluador TI</h1>
-        <p style="color:#6b7280;">Reporte técnico generado automáticamente</p>
-        <p style="font-size:12px; color:#6b7280;">Fecha de generación: ${fecha}</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:20px;">
+            <div>
+                <h1 style="font-size:28px; font-weight:800; color:#1e3a8a; margin:0;">Evaluador TI</h1>
+                <p style="color:#6b7280; margin:4px 0 0 0;">Reporte técnico generado automáticamente</p>
+                <p style="font-size:12px; color:#6b7280; margin:4px 0 0 0;">Fecha de generación: ${fecha}</p>
+            </div>
+            <div style="flex:0 0 auto;">
+                <img src="images/logo cyd.png" alt="CyD Ingenieria" style="width:110px; height:auto; display:block;" />
+            </div>
+        </div>
 
         <div style="display:flex; gap:20px; align-items:stretch; margin-top:30px;">
             <div style="flex:1; padding:20px; border-radius:12px; background:#f9fafb; display:flex; flex-direction:column; justify-content:center;">
