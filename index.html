@@ -517,14 +517,14 @@
             const teclaSel = document.querySelector('select[data-key="teclado"]');
             const teclaVal = teclaSel ? teclaSel.value : null;
             if (parseInt(teclaVal) <= 1) {
-                messages.push({ type: 'warning', text: 'Teclado: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.' });
+                messages.push({ type: 'warning', text: 'Teclado: Evaluar equipo según su antigüedad para salvar teclado o mandar a Préstamo/Reciclaje.' });
             }
 
             // 1.j Regla Estado Físico: Pantalla dañada
             const pantSel = document.querySelector('select[data-key="pantalla"]');
             const pantVal = pantSel ? pantSel.value : null;
             if (parseInt(pantVal) <= 1) {
-                messages.push({ type: 'warning', text: 'Pantalla Rota: Evaluar equipo según su antigüedad para salvar pantalla o mandar a Préstamo/Reciclaje.' });
+                messages.push({ type: 'warning', text: 'Pantalla: Evaluar equipo según su antigüedad para salvar pantalla o mandar a Préstamo/Reciclaje.' });
             }
 
             // 1.c Regla Puerto de carga delicado
@@ -664,7 +664,7 @@
                 statusBadge.innerText = "CANDIDATO A RECICLAJE";
                 statusBadge.className = "mt-4 inline-block status-pill bg-red-700 text-white";
                 totalDisplay.className = "text-6xl font-black text-red-600";
-            } else if (typeof pantVal !== 'undefined' && pantVal === "1") {
+            } else if ((typeof pantVal !== 'undefined' && pantVal === "1") || (typeof teclaVal !== 'undefined' && teclaVal === "1")) {
                 // Pantalla dañada -> forzar estado a Préstamo/Reciclaje (mantener el puntaje calculado)
                 statusBadge.innerText = "CANDIDATO A PRÉSTAMO/RECICLAJE";
                 statusBadge.className = "mt-4 inline-block status-pill bg-yellow-500 text-white";
