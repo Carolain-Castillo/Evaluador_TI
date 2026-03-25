@@ -658,9 +658,9 @@
                 });
             }
 
-            // Si el equipo NO ENCIENDE: deshabilitar todos los selects de Estado Físico
-            // y Rendimiento Interno excepto Memoria RAM, y forzar puntaje a 39%.
-            if (enciendeVal === "0") {
+            // Si el equipo NO ENCIENDE o NO TIENE RAM: deshabilitar todos los selects de Estado Físico
+            // y Rendimiento Interno excepto Memoria RAM y '¿Enciende?', y forzar puntaje a 39%.
+            if (enciendeVal === "0" || ramVal === "0") {
                 const estadoKeysAll = ['carcasa', 'teclado', 'pantalla', 'bateria', 'usb', 'carga', 'hdmi', 'red', 'audio', 'camara'];
                 const rendimientoKeysAll = ['enciende', 'disco', 'video'];
 
