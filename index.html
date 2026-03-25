@@ -471,7 +471,7 @@
             }
 
             // Calcular puntaje ponderado total (max 100)
-            const weightedTotal = (antiguedadWeighted50 || 0) + (estadoWeighted35 || 0) + (rendWeighted15 || 0);
+            let weightedTotal = (antiguedadWeighted50 || 0) + (estadoWeighted35 || 0) + (rendWeighted15 || 0);
 
             // LÓGICA DE UPGRADES Y REGLAS DE NEGOCIO
 
@@ -656,6 +656,47 @@
                     div.innerText = msg.text;
                     upgradeContainer.appendChild(div);
                 });
+            }
+
+            // Si el equipo NO ENCIENDE: deshabilitar todos los selects de Estado Físico
+            // y Rendimiento Interno excepto Memoria RAM, y forzar puntaje a 39%.
+            if (enciendeVal === "0") {
+                const estadoKeysAll = ['carcasa', 'teclado', 'pantalla', 'bateria', 'usb', 'carga', 'hdmi', 'red', 'audio', 'camara'];
+                const rendimientoKeysAll = ['enciende', 'disco', 'video'];
+
+                // Deshabilitar sólo los campos de Estado Físico
+                estadoKeysAll.forEach(k => {
+                    const s = document.querySelector(`select[data-key="${k}"]`);
+                    if (s) s.disabled = true;
+                });
+
+                // En Rendimiento, NO deshabilitar 'enciende' (trigger) ni la RAM; sólo deshabilitar otros
+                rendimientoKeysAll.forEach(k => {
+                    if (k === 'enciende') return; // mantener editable
+                    const s = document.querySelector(`select[data-key="${k}"]`);
+                    if (s) s.disabled = true;
+                });
+
+                // Asegurar que Memoria RAM quede habilitada para permitir corrección
+                const ramSel = document.getElementById('ramSelect');
+                if (ramSel) ramSel.disabled = false;
+
+                weightedTotal = 39;
+                noReasignable = true;
+            } else {
+                // Restaurar habilitación normal en caso contrario
+                const estadoKeysAll = ['carcasa', 'teclado', 'pantalla', 'bateria', 'usb', 'carga', 'hdmi', 'red', 'audio', 'camara'];
+                const rendimientoKeysAll = ['enciende', 'disco', 'video'];
+                estadoKeysAll.forEach(k => {
+                    const s = document.querySelector(`select[data-key="${k}"]`);
+                    if (s) s.disabled = false;
+                });
+                rendimientoKeysAll.forEach(k => {
+                    const s = document.querySelector(`select[data-key="${k}"]`);
+                    if (s) s.disabled = false;
+                });
+                const ramSel = document.getElementById('ramSelect');
+                if (ramSel) ramSel.disabled = false;
             }
 
             // Estado Final (mostrar total ponderado 0-100)
