@@ -681,6 +681,23 @@
                 const ramSel = document.getElementById('ramSelect');
                 if (ramSel) ramSel.disabled = false;
 
+                // Poner puntaje 0 en las filas afectadas (ya que no pueden evaluarse)
+                estadoKeysAll.forEach(k => {
+                    const s = document.querySelector(`select[data-key="${k}"]`);
+                    if (s) {
+                        const cell = s.closest && s.closest('tr') ? s.closest('tr').querySelector('.score-val') : null;
+                        if (cell) cell.innerText = '0';
+                    }
+                });
+                rendimientoKeysAll.forEach(k => {
+                    if (k === 'enciende') return;
+                    const s = document.querySelector(`select[data-key="${k}"]`);
+                    if (s) {
+                        const cell = s.closest && s.closest('tr') ? s.closest('tr').querySelector('.score-val') : null;
+                        if (cell) cell.innerText = '0';
+                    }
+                });
+
                 weightedTotal = 39;
                 noReasignable = true;
             } else {
@@ -697,6 +714,21 @@
                 });
                 const ramSel = document.getElementById('ramSelect');
                 if (ramSel) ramSel.disabled = false;
+                // Restaurar visualmente los puntajes según los valores actuales de los selects
+                estadoKeysAll.forEach(k => {
+                    const s = document.querySelector(`select[data-key="${k}"]`);
+                    if (s) {
+                        const cell = s.closest && s.closest('tr') ? s.closest('tr').querySelector('.score-val') : null;
+                        if (cell) cell.innerText = parseInt(s.value) || 0;
+                    }
+                });
+                rendimientoKeysAll.forEach(k => {
+                    const s = document.querySelector(`select[data-key="${k}"]`);
+                    if (s) {
+                        const cell = s.closest && s.closest('tr') ? s.closest('tr').querySelector('.score-val') : null;
+                        if (cell) cell.innerText = parseInt(s.value) || 0;
+                    }
+                });
             }
 
             // Estado Final (mostrar total ponderado 0-100)
