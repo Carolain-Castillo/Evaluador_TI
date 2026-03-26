@@ -285,6 +285,7 @@
                                         class="w-full p-1 border rounded">
                                         <option value="10">Funciona</option>
                                         <option value="1">No funciona</option>
+                                        <option value="NA">No tiene</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -296,6 +297,7 @@
                                         class="w-full p-1 border rounded">
                                         <option value="10">Funciona</option>
                                         <option value="1">No funciona</option>
+                                        <option value="NA">No tiene</option>
                                     </select>
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
@@ -392,17 +394,25 @@
             let messages = [];
             let noReasignable = false;
 
-            // Sumar puntos
+            // Sumar puntos (excluir selects con value 'NA' completamente)
             selects.forEach(sel => {
-                const val = parseInt(sel.value);
+                const raw = sel.value;
+                if (raw === 'NA') {
+                    const cell = sel.closest('tr').querySelector('.score-val');
+                    if (cell) cell.innerText = '—';
+                    return;
+                }
+                const val = parseInt(raw) || 0;
                 total += val;
                 // Actualizar visualmente el puntaje por fila
                 sel.closest('tr').querySelector('.score-val').innerText = val;
             });
 
             // Calcular máximo posible dinámicamente (para normalizar a 0-100)
+            // Calcular máximo posible dinámicamente (ignorar selects con 'NA')
             let maxPossible = 0;
             selects.forEach(sel => {
+                if (sel.value === 'NA') return; // excluir completamente
                 const opts = Array.from(sel.options).map(o => parseInt(o.value) || 0);
                 if (opts.length) maxPossible += Math.max(...opts);
             });
@@ -429,6 +439,7 @@
             estadoKeys.forEach(k => {
                 const s = document.querySelector(`select[data-key="${k}"]`);
                 if (s) {
+                    if (s.value === 'NA') return; // excluir completamente
                     estadoRaw += parseInt(s.value) || 0;
                     estadoMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
                 }
@@ -457,6 +468,7 @@
             rendimientoKeys.forEach(k => {
                 const s = document.querySelector(`select[data-key="${k}"]`);
                 if (s) {
+                    if (s.value === 'NA') return; // excluir completamente
                     rendRaw += parseInt(s.value) || 0;
                     rendMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
                 }
@@ -679,7 +691,10 @@
                     const s = document.querySelector(`select[data-key="${k}"]`);
                     const cell = s && s.closest ? s.closest('tr').querySelector('.score-val') : null;
                     if (allowKeys.includes(k)) {
-                        if (cell) cell.innerText = parseInt(s.value) || 0;
+                        if (cell) {
+                            const p = parseInt(s.value);
+                            cell.innerText = isNaN(p) ? '—' : p;
+                        }
                     } else {
                         if (s) s.value = s.value; // keep value but disabled
                         if (cell) cell.innerText = '—';
@@ -744,7 +759,10 @@
                 // Restaurar visualmente los puntajes según los valores actuales de los selects
                 allSelects.forEach(s => {
                     const cell = s.closest && s.closest('tr') ? s.closest('tr').querySelector('.score-val') : null;
-                    if (cell) cell.innerText = parseInt(s.value) || 0;
+                    if (cell) {
+                        const p = parseInt(s.value);
+                        cell.innerText = isNaN(p) ? '—' : p;
+                    }
                 });
             }
 
