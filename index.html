@@ -121,7 +121,85 @@
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
                             </tr>
-                            <!-- Estado Físico Group -->
+                            <!-- RENDIMIENTO INTERNO (moved after Antigüedad) -->
+                            <tr class="bg-gray-50">
+                                <td colspan="3" class="px-4 py-2 text-center text-lg font-extrabold text-gray-700">
+                                    RENDIMIENTO INTERNO</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">¿Enciende?</td>
+                                <td class="p-4">
+                                    <select data-key="enciende" onchange="calculateScore()"
+                                        class="w-full p-1 border rounded">
+                                        <option value="10">Enciende sin problemas</option>
+                                        <option value="0">No enciende</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Memoria RAM</td>
+                                <td class="p-4">
+                                    <select id="ramSelect" data-key="ram" onchange="calculateScore()"
+                                        class="w-full p-1 border rounded">
+                                        <option value="10">≥ 32 GB</option>
+                                        <option value="6">16 GB</option>
+                                        <option value="3">8 GB</option>
+                                        <option value="1">4 GB</option>
+                                        <option value="0">Sin RAM</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Disco Duro</td>
+                                <td class="p-4">
+                                    <select id="discoSelect" data-key="disco" onchange="calculateScore()"
+                                        class="w-full p-1 border rounded">
+                                        <option value="10">SSD > 500 GB</option>
+                                        <option value="6">SSD ≤ 500 GB</option>
+                                        <option value="1">HDD Mecánico</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Tarjeta de Video</td>
+                                <td class="p-4">
+                                    <select id="gpuSelect" data-key="video" onchange="calculateScore()"
+                                        class="w-full p-1 border rounded">
+                                        <option value="10">Dedicada ≥ 8 GB</option>
+                                        <option value="6">Dedicada 4 GB</option>
+                                        <option value="3">Dedicada 2 GB</option>
+                                        <option value="0">No tiene</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Estado del audio</td>
+                                <td class="p-4">
+                                    <select data-key="audio" onchange="calculateScore()"
+                                        class="w-full p-1 border rounded">
+                                        <option value="10">Funciona</option>
+                                        <option value="1">No funciona</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">Estado de la cámara</td>
+                                <td class="p-4">
+                                    <select data-key="camara" onchange="calculateScore()"
+                                        class="w-full p-1 border rounded">
+                                        <option value="10">Funciona</option>
+                                        <option value="1">No funciona</option>
+                                    </select>
+                                </td>
+                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
+                            </tr>
+
+                            <!-- ESTADO FÍSICO (moved below Rendimiento Interno) -->
                             <tr class="bg-gray-50">
                                 <td colspan="3" class="px-4 py-2 text-center text-lg font-extrabold text-gray-700">
                                     ESTADO FÍSICO</td>
@@ -222,83 +300,7 @@
                                 </td>
                                 <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
                             </tr>
-                            <tr>
-                                <td class="p-4 font-medium">Estado del audio</td>
-                                <td class="p-4">
-                                    <select data-key="audio" onchange="calculateScore()"
-                                        class="w-full p-1 border rounded">
-                                        <option value="10">Funciona</option>
-                                        <option value="1">No funciona</option>
-                                    </select>
-                                </td>
-                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
-                            </tr>
-                            <tr>
-                                <td class="p-4 font-medium">Estado de la cámara</td>
-                                <td class="p-4">
-                                    <select data-key="camara" onchange="calculateScore()"
-                                        class="w-full p-1 border rounded">
-                                        <option value="10">Funciona</option>
-                                        <option value="1">No funciona</option>
-                                    </select>
-                                </td>
-                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
-                            </tr>
-                            <!-- Hardware Crítico -->
-                            <tr class="bg-gray-50">
-                                <td colspan="3" class="px-4 py-2 text-center text-lg font-extrabold text-gray-700">
-                                    RENDIMIENTO INTERNO</td>
-                            </tr>
-                            <tr>
-                                <td class="p-4 font-medium">¿Enciende?</td>
-                                <td class="p-4">
-                                    <select data-key="enciende" onchange="calculateScore()"
-                                        class="w-full p-1 border rounded">
-                                        <option value="10">Enciende sin problemas</option>
-                                        <option value="0">No enciende</option>
-                                    </select>
-                                </td>
-                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
-                            </tr>
-                            <tr>
-                                <td class="p-4 font-medium">Memoria RAM</td>
-                                <td class="p-4">
-                                    <select id="ramSelect" data-key="ram" onchange="calculateScore()"
-                                        class="w-full p-1 border rounded">
-                                        <option value="10">≥ 32 GB</option>
-                                        <option value="6">16 GB</option>
-                                        <option value="3">8 GB</option>
-                                        <option value="1">4 GB</option>
-                                        <option value="0">Sin RAM</option>
-                                    </select>
-                                </td>
-                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
-                            </tr>
-                            <tr>
-                                <td class="p-4 font-medium">Disco Duro</td>
-                                <td class="p-4">
-                                    <select id="discoSelect" data-key="disco" onchange="calculateScore()"
-                                        class="w-full p-1 border rounded">
-                                        <option value="10">SSD > 500 GB</option>
-                                        <option value="6">SSD ≤ 500 GB</option>
-                                        <option value="1">HDD Mecánico</option>
-                                    </select>
-                                </td>
-                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
-                            </tr>
-                            <tr>
-                                <td class="p-4 font-medium">Tarjeta de Video</td>
-                                <td class="p-4">
-                                    <select id="gpuSelect" data-key="video" onchange="calculateScore()"
-                                        class="w-full p-1 border rounded">
-                                        <option value="10">Dedicada ≥ 8 GB</option>
-                                        <option value="6">Dedicada 4 GB</option>
-                                        <option value="3">Dedicada 2 GB</option>
-                                        <option value="0">No tiene</option>
-                                    </select>
-                                </td>
-                                <td class="p-4 text-center font-bold text-blue-600 score-val">-</td>
-                            </tr>
+                            <!-- Hardware Crítico (moved) -->
                         </tbody>
                     </table>
                 </div>
