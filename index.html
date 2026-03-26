@@ -658,76 +658,80 @@
                 });
             }
 
-            // Si el equipo NO ENCIENDE o NO TIENE RAM: deshabilitar todos los selects de Estado Físico
-            // y Rendimiento Interno excepto Memoria RAM y '¿Enciende?', y forzar puntaje a 39%.
+            // Si el equipo NO ENCIENDE o NO TIENE RAM: aplicar lógica especial
             if (enciendeVal === "0" || ramVal === "0") {
+                // Campos permitidos: carcasa, teclado, pantalla, antiguedad.
+                // Además mantener habilitados 'enciende' y 'ram' para permitir corrección del estado.
+                const allowKeys = ['carcasa', 'teclado', 'pantalla', 'antiguedad', 'enciende', 'ram'];
+                const allSelects = Array.from(document.querySelectorAll('#tablaEvaluacion select'));
+                allSelects.forEach(s => {
+                    const key = s.getAttribute('data-key') || s.id || '';
+                    // Deshabilitar todo lo que no esté en allowKeys (antiguedad select has data-key)
+                    if (!allowKeys.includes(key)) s.disabled = true;
+                    else s.disabled = false;
+                });
+
+                // Actualizar visualmente: mantener valores visibles sólo para carcasa/teclado/pantalla/antiguedad
                 const estadoKeysAll = ['carcasa', 'teclado', 'pantalla', 'bateria', 'usb', 'carga', 'hdmi', 'red', 'audio', 'camara'];
-                const rendimientoKeysAll = ['enciende', 'disco', 'video'];
-
-                // Deshabilitar sólo los campos de Estado Físico
                 estadoKeysAll.forEach(k => {
                     const s = document.querySelector(`select[data-key="${k}"]`);
-                    if (s) s.disabled = true;
-                });
-
-                // En Rendimiento, NO deshabilitar 'enciende' (trigger) ni la RAM; sólo deshabilitar otros
-                rendimientoKeysAll.forEach(k => {
-                    if (k === 'enciende') return; // mantener editable
-                    const s = document.querySelector(`select[data-key="${k}"]`);
-                    if (s) s.disabled = true;
-                });
-
-                // Asegurar que Memoria RAM quede habilitada para permitir corrección
-                const ramSel = document.getElementById('ramSelect');
-                if (ramSel) ramSel.disabled = false;
-
-                // Poner puntaje 0 en las filas afectadas (ya que no pueden evaluarse)
-                estadoKeysAll.forEach(k => {
-                    const s = document.querySelector(`select[data-key="${k}"]`);
-                    if (s) {
-                        const cell = s.closest && s.closest('tr') ? s.closest('tr').querySelector('.score-val') : null;
-                        if (cell) cell.innerText = '0';
-                    }
-                });
-                rendimientoKeysAll.forEach(k => {
-                    if (k === 'enciende') return;
-                    const s = document.querySelector(`select[data-key="${k}"]`);
-                    if (s) {
-                        const cell = s.closest && s.closest('tr') ? s.closest('tr').querySelector('.score-val') : null;
-                        if (cell) cell.innerText = '0';
+                    const cell = s && s.closest ? s.closest('tr').querySelector('.score-val') : null;
+                    if (allowKeys.includes(k)) {
+                        if (cell) cell.innerText = parseInt(s.value) || 0;
+                    } else {
+                        if (s) s.value = s.value; // keep value but disabled
+                        if (cell) cell.innerText = '—';
                     }
                 });
 
-                weightedTotal = 39;
+                // Calcular puntaje sólo con Carcasa, Teclado y Pantalla y escalar a 0-39
+                const carc = parseInt((document.querySelector('select[data-key="carcasa"]')||{value:0}).value) || 0;
+                const tecla = parseInt((document.querySelector('select[data-key="teclado"]')||{value:0}).value) || 0;
+                const pant = parseInt((document.querySelector('select[data-key="pantalla"]')||{value:0}).value) || 0;
+                const raw = carc + tecla + pant;
+                const maxRaw = 10 + 10 + 10; // 30
+                const scaledTo39 = maxRaw > 0 ? Math.round((raw / maxRaw) * 39) : 0;
+
+                // Mapeo de antigüedad -> tope absoluto (en porcentaje)
+                // Índices de select antiguedad: 0:0-2, 1:3-4, 2:5-6, 3:7-8, 4:9-10
+                const antigSel = document.querySelector('select[data-key="antiguedad"]');
+                const antigIndex = antigSel ? antigSel.selectedIndex : 0;
+                const antigCapMap = [39, 25, 15, 10, 0];
+                const antigCap = antigCapMap[Math.min(Math.max(antigIndex,0), antigCapMap.length-1)];
+
+                // El puntaje final no puede superar el tope dado por antigüedad
+                const finalScore = Math.min(scaledTo39, antigCap);
+
+                // Mostrar en las celdas correspondientes
+                const carcCell = document.querySelector('select[data-key="carcasa"]')?.closest('tr')?.querySelector('.score-val');
+                const teclaCell = document.querySelector('select[data-key="teclado"]')?.closest('tr')?.querySelector('.score-val');
+                const pantCell = document.querySelector('select[data-key="pantalla"]')?.closest('tr')?.querySelector('.score-val');
+                if (carcCell) carcCell.innerText = carc;
+                if (teclaCell) teclaCell.innerText = tecla;
+                if (pantCell) pantCell.innerText = pant;
+
+                // Poner guiones en las filas de rendimiento que están deshabilitadas
+                const rendimientoKeysAll = ['disco', 'video'];
+                rendimientoKeysAll.forEach(k => {
+                    const s = document.querySelector(`select[data-key="${k}"]`);
+                    if (s) {
+                        s.disabled = true;
+                        const cell = s.closest('tr').querySelector('.score-val');
+                        if (cell) cell.innerText = '—';
+                    }
+                });
+
+                weightedTotal = finalScore;
                 noReasignable = true;
             } else {
                 // Restaurar habilitación normal en caso contrario
-                const estadoKeysAll = ['carcasa', 'teclado', 'pantalla', 'bateria', 'usb', 'carga', 'hdmi', 'red', 'audio', 'camara'];
-                const rendimientoKeysAll = ['enciende', 'disco', 'video'];
-                estadoKeysAll.forEach(k => {
-                    const s = document.querySelector(`select[data-key="${k}"]`);
-                    if (s) s.disabled = false;
-                });
-                rendimientoKeysAll.forEach(k => {
-                    const s = document.querySelector(`select[data-key="${k}"]`);
-                    if (s) s.disabled = false;
-                });
-                const ramSel = document.getElementById('ramSelect');
-                if (ramSel) ramSel.disabled = false;
+                const allSelects = Array.from(document.querySelectorAll('#tablaEvaluacion select'));
+                allSelects.forEach(s => s.disabled = false);
+
                 // Restaurar visualmente los puntajes según los valores actuales de los selects
-                estadoKeysAll.forEach(k => {
-                    const s = document.querySelector(`select[data-key="${k}"]`);
-                    if (s) {
-                        const cell = s.closest && s.closest('tr') ? s.closest('tr').querySelector('.score-val') : null;
-                        if (cell) cell.innerText = parseInt(s.value) || 0;
-                    }
-                });
-                rendimientoKeysAll.forEach(k => {
-                    const s = document.querySelector(`select[data-key="${k}"]`);
-                    if (s) {
-                        const cell = s.closest && s.closest('tr') ? s.closest('tr').querySelector('.score-val') : null;
-                        if (cell) cell.innerText = parseInt(s.value) || 0;
-                    }
+                allSelects.forEach(s => {
+                    const cell = s.closest && s.closest('tr') ? s.closest('tr').querySelector('.score-val') : null;
+                    if (cell) cell.innerText = parseInt(s.value) || 0;
                 });
             }
 
