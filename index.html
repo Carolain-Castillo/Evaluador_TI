@@ -394,14 +394,39 @@
             let messages = [];
             let noReasignable = false;
 
-            // Sumar puntos (excluir selects con value 'NA' completamente)
+            // Claves que deben comportarse neutrales cuando el valor es 'NA'
+            const neutralKeys = ['hdmi', 'red'];
+
+            // Sumar puntos (excluir selects con value 'NA' completamente),
+            // pero para los campos neutrales ('hdmi','red') conservar el último
+            // valor numérico conocido para que seleccionar 'No tiene' no cambie el puntaje.
             selects.forEach(sel => {
+                const key = sel.getAttribute('data-key') || sel.id || '';
                 const raw = sel.value;
+
+                // Si es un campo neutral y está en 'NA', intentar usar el último valor guardado
+                if (raw === 'NA' && neutralKeys.includes(key)) {
+                    const last = sel.dataset.lastValue;
+                    const cell = sel.closest('tr').querySelector('.score-val');
+                    if (cell) cell.innerText = '—';
+                    if (typeof last !== 'undefined') {
+                        const val = parseInt(last) || 0;
+                        total += val;
+                    }
+                    return;
+                }
+
                 if (raw === 'NA') {
                     const cell = sel.closest('tr').querySelector('.score-val');
                     if (cell) cell.innerText = '—';
                     return;
                 }
+
+                // Guardar último valor conocido para campos neutrales
+                if (neutralKeys.includes(key)) {
+                    sel.dataset.lastValue = raw;
+                }
+
                 const val = parseInt(raw) || 0;
                 total += val;
                 // Actualizar visualmente el puntaje por fila
@@ -412,6 +437,17 @@
             // Calcular máximo posible dinámicamente (ignorar selects con 'NA')
             let maxPossible = 0;
             selects.forEach(sel => {
+                const key = sel.getAttribute('data-key') || sel.id || '';
+                // Si es campo neutral en 'NA', usar el último valor conocido para mantener consistencia
+                if (sel.value === 'NA' && neutralKeys.includes(key)) {
+                    // incluir su máximo posible sólo si ya existía un valor previo
+                    const last = sel.dataset.lastValue;
+                    if (typeof last !== 'undefined') {
+                        const opts = Array.from(sel.options).map(o => parseInt(o.value) || 0);
+                        if (opts.length) maxPossible += Math.max(...opts);
+                    }
+                    return;
+                }
                 if (sel.value === 'NA') return; // excluir completamente
                 const opts = Array.from(sel.options).map(o => parseInt(o.value) || 0);
                 if (opts.length) maxPossible += Math.max(...opts);
@@ -439,6 +475,16 @@
             estadoKeys.forEach(k => {
                 const s = document.querySelector(`select[data-key="${k}"]`);
                 if (s) {
+                    const key = k;
+                    // Si es neutral (hdmi/red) y está en 'NA', usar último valor conocido si existe
+                    if (s.value === 'NA' && neutralKeys.includes(key)) {
+                        const last = s.dataset.lastValue;
+                        if (typeof last !== 'undefined') {
+                            estadoRaw += parseInt(last) || 0;
+                            estadoMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                        }
+                        return;
+                    }
                     if (s.value === 'NA') return; // excluir completamente
                     estadoRaw += parseInt(s.value) || 0;
                     estadoMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
