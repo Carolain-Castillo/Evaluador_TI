@@ -512,9 +512,9 @@
             } else if (bateriaVal === "3") {
                 messages.push({ type: 'warning', text: 'Batería Aceptable / Gastada.' });
             } else if (bateriaVal === "1") {
-                messages.push({ type: 'warning', text: 'Batería degradada, es recomendable cambiar según antigüedad del equipo.' });
+                messages.push({ type: 'warning', text: 'Batería degradada, es recomendable cambiar según antigüedad del equipo o enviar a préstamo.' });
             } else if (bateriaVal === "0") {
-                messages.push({ type: 'critical', text: 'Batería muy gastada, es recomendable cambiar según antigüedad del equipo.' });
+                messages.push({ type: 'critical', text: 'Batería muy gastada, es recomendable cambiar según antigüedad del equipo o enviar a préstamo.' });
             }
 
             // 1.b Regla Puertos USB: algunos con fallas
@@ -774,10 +774,28 @@
                 });
             }
 
-            // Aplicar tope (cap) del 54% si Teclado o Pantalla están en "Dañado / Trizado" (valor '1').
+            // Aplicar tope (cap) del 54% si Teclado o Pantalla o Carcasa están en "Dañado / Trizado" (valor '1').
             const damagedTop = ((typeof teclaVal !== 'undefined' && teclaVal === "1") || (typeof pantVal !== 'undefined' && pantVal === "1") || (typeof carcVal !== 'undefined' && carcVal === "1"));
             if (damagedTop && weightedTotal > 54) {
                 weightedTotal = 54; // tope superior, no forzar valor si ya está por debajo
+            }
+
+            // Aplicar tope dinámico por Batería: 60% - 69% -> tope 54%
+            const bateriaSelForCap = document.querySelector('select[data-key="bateria"]');
+            const bateriaValForCap = bateriaSelForCap ? bateriaSelForCap.value : null;
+            // Aplicar tope 54% si Batería está en 60-69% (value '1') o <60% (value '0')
+            if ((bateriaValForCap === "1" || bateriaValForCap === "0") && weightedTotal > 54) {
+                weightedTotal = 54; // tope superior por batería degradada
+            }
+
+            // Aplicar topes por Antigüedad: 7-8 años -> tope 39%, 9-10 años -> tope 20%
+            const antigSelForCap = document.querySelector('select[data-key="antiguedad"]');
+            const antigIndexForCap = antigSelForCap ? antigSelForCap.selectedIndex : -1;
+            if (antigIndexForCap === 3 && weightedTotal > 39) {
+                weightedTotal = 39; // cap para 7-8 años
+            }
+            if (antigIndexForCap === 4 && weightedTotal > 20) {
+                weightedTotal = 20; // cap para 9-10 años
             }
 
             // Estado Final (mostrar total ponderado 0-100)
