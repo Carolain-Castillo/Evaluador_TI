@@ -774,19 +774,26 @@
                 });
             }
 
+            // Aplicar tope (cap) del 54% si Teclado o Pantalla están en "Dañado / Trizado" (valor '1').
+            const damagedTop = ((typeof teclaVal !== 'undefined' && teclaVal === "1") || (typeof pantVal !== 'undefined' && pantVal === "1") || (typeof carcVal !== 'undefined' && carcVal === "1"));
+            if (damagedTop && weightedTotal > 54) {
+                weightedTotal = 54; // tope superior, no forzar valor si ya está por debajo
+            }
+
             // Estado Final (mostrar total ponderado 0-100)
             totalDisplay.innerText = `${weightedTotal}%`;
             // Rangos:
             // - >= 55% => CANDIDATO A REASIGNACIÓN
             // - 40% - 54% => CANDIDATO A PRÉSTAMO
             // - <= 39% => CANDIDATO A RECICLAJE
+            // Prioridad de reglas: noReasignable (reciclaje) > damagedTop (préstamo) > rangos por puntaje
             if (noReasignable) {
                 statusBadge.innerText = "CANDIDATO A RECICLAJE";
                 statusBadge.className = "mt-4 inline-block status-pill bg-red-700 text-white";
                 totalDisplay.className = "text-6xl font-black text-red-600";
-            } else if ((typeof pantVal !== 'undefined' && pantVal === "1") || (typeof teclaVal !== 'undefined' && teclaVal === "1")) {
-                // Pantalla dañada -> forzar estado a Préstamo/Reciclaje (mantener el puntaje calculado)
-                statusBadge.innerText = "CANDIDATO A PRÉSTAMO/RECICLAJE";
+            } else if (damagedTop) {
+                // Si teclado o pantalla están dañados, el equipo no puede reasignarse: estado PRÉSTAMO
+                statusBadge.innerText = "CANDIDATO A PRÉSTAMO";
                 statusBadge.className = "mt-4 inline-block status-pill bg-yellow-500 text-white";
                 totalDisplay.className = "text-6xl font-black text-yellow-600";
             } else if (weightedTotal >= 55) {
