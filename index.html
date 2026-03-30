@@ -511,12 +511,21 @@
                 rendimientoKeys = ['enciende', 'ram', 'disco'];
             }
             let rendRaw = 0, rendMax = 0;
+            // Multiplicador local para aumentar impacto de la Memoria RAM en Rendimiento
+            const ramMultiplier = 2; // sólo se usa aquí, amplifica el efecto de la opción 'ram'
             rendimientoKeys.forEach(k => {
                 const s = document.querySelector(`select[data-key="${k}"]`);
                 if (s) {
                     if (s.value === 'NA') return; // excluir completamente
-                    rendRaw += parseInt(s.value) || 0;
-                    rendMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                    const val = parseInt(s.value) || 0;
+                    const optMax = Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                    if (k === 'ram') {
+                        rendRaw += val * ramMultiplier;
+                        rendMax += optMax * ramMultiplier;
+                    } else {
+                        rendRaw += val;
+                        rendMax += optMax;
+                    }
                 }
             });
             const rendPercent = rendMax > 0 ? (rendRaw / rendMax) * 100 : 0;
@@ -574,21 +583,21 @@
             const carcSel = document.querySelector('select[data-key="carcasa"]');
             const carcVal = carcSel ? carcSel.value : null;
             if (parseInt(carcVal) <= 1) {
-                messages.push({ type: 'warning', text: 'Carcasa: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.' });
+                messages.push({ type: 'warning', text: 'Carcasa Dañada/Trizada: Evaluar equipo según su antigüedad para Préstamo o Reciclaje.' });
             }
 
             // 1.i Regla Estado Físico: Teclado dañado
             const teclaSel = document.querySelector('select[data-key="teclado"]');
             const teclaVal = teclaSel ? teclaSel.value : null;
             if (parseInt(teclaVal) <= 1) {
-                messages.push({ type: 'warning', text: 'Teclado: Evaluar equipo según su antigüedad para salvar teclado o mandar a Préstamo/Reciclaje.' });
+                messages.push({ type: 'warning', text: 'Teclado Dañado/Trizado: Evaluar equipo según su antigüedad para salvar teclado o mandar a Préstamo/Reciclaje.' });
             }
 
             // 1.j Regla Estado Físico: Pantalla dañada
             const pantSel = document.querySelector('select[data-key="pantalla"]');
             const pantVal = pantSel ? pantSel.value : null;
             if (parseInt(pantVal) <= 1) {
-                messages.push({ type: 'warning', text: 'Pantalla: Evaluar equipo según su antigüedad para salvar pantalla o mandar a Préstamo/Reciclaje.' });
+                messages.push({ type: 'warning', text: 'Pantalla Dañada/Trizada: Evaluar equipo según su antigüedad para salvar pantalla o mandar a Préstamo/Reciclaje.' });
             }
 
             // 1.c Regla Puerto de carga delicado
@@ -599,7 +608,7 @@
             }
             // Si el puerto de carga está en mal estado
             if (cargaVal === "1") {
-                messages.push({ type: 'warning', text: 'Puerto Carga: Evaluar antigüedad del equipo para salvar puerto o mandar a Reciclaje / Préstamo.' });
+                messages.push({ type: 'warning', text: 'Puerto Carga Malo: Evaluar antigüedad del equipo para salvar puerto o mandar a Reciclaje / Préstamo.' });
             }
 
             // 1.d Regla Puerto Red: No funciona
@@ -665,7 +674,7 @@
                 messages.push({ type: 'info', text: 'Upgrade RAM: Subir ≥ a 16GB para mejor desempeño.' });
             }
             if (perfil === 'CAD_BIM' && parseInt(ramVal) < 6) {
-                messages.push({ type: 'critical', text: 'Memoria RAM: Upgrade de RAM obligatorio para CAD/BIM a ≥ 16GB.' });
+                messages.push({ type: 'critical', text: 'Memoria RAM: Upgrade de RAM ≥ a 16GB obligatoria para CAD/BIM.' });
             }
             // Si no tiene RAM o hay falla, sugerir evaluar según antigüedad/estado
             if (ramVal === "0") {
