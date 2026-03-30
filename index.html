@@ -562,12 +562,20 @@
             if (redVal === "1") {
                 messages.push({ type: 'warning', text: 'Puerto Red: Evaluar antigüedad y estado físico del equipo para salvar Puerto de Red, o mandar a Reciclaje / Préstamo.' });
             }
+            // Mensaje informativo si el equipo no tiene puerto de red
+            if (redVal === 'NA') {
+                messages.push({ type: 'info', text: 'Estado Puerto Red: No tiene, en el caso de ser necesario, utilice un adaptador para el puerto de Red.' });
+            }
 
             // 1.e Regla Puerto HDMI: No funciona
             const hdmiSel = document.querySelector('select[data-key="hdmi"]');
             const hdmiVal = hdmiSel ? hdmiSel.value : null;
             if (hdmiVal === "1") {
                 messages.push({ type: 'warning', text: 'Puerto HDMI: Evaluar antigüedad y estado físico del equipo para salvar puerto HDMI, o mandar a Reciclaje / Préstamo.' });
+            }
+            // Mensaje informativo si el equipo no tiene puerto HDMI
+            if (hdmiVal === 'NA') {
+                messages.push({ type: 'info', text: 'Estado Puerto HDMI: No tiene, en el caso de ser necesario, utilice un adaptador para el puerto HDMI.' });
             }
 
             // 1.f Regla Audio: No funciona
