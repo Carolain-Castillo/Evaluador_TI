@@ -532,7 +532,17 @@
             const rendWeighted15 = Math.round((rendPercent / 100) * 15);
             const rendimientoValueEl = document.getElementById('rendimientoValue');
             const rendimientoBarEl = document.getElementById('rendimientoBar');
-            if (rendimientoValueEl) rendimientoValueEl.innerText = rendRaw;
+            // Mostrar en el Desglose la suma simple de los valores seleccionados
+            // (sin aplicar el multiplicador de RAM) para mantener consistencia
+            // con los otros desgloses (ej: 6 ítems * 10 = 60).
+            let rendRawDisplay = 0;
+            rendimientoKeys.forEach(k => {
+                const s = document.querySelector(`select[data-key="${k}"]`);
+                if (s && s.value !== 'NA') {
+                    rendRawDisplay += parseInt(s.value) || 0;
+                }
+            });
+            if (rendimientoValueEl) rendimientoValueEl.innerText = rendRawDisplay;
             if (rendimientoBarEl) {
                 const w = Math.round(rendPercent);
                 rendimientoBarEl.style.width = w + '%';
