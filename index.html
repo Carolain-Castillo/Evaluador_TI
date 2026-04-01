@@ -474,7 +474,7 @@
             let estadoRaw = 0, estadoMax = 0;
             estadoKeys.forEach(k => {
                 const s = document.querySelector(`select[data-key="${k}"]`);
-                if (s) {
+                if (s && !s.disabled) {
                     const key = k;
                     // Si es neutral (hdmi/red) y está en 'NA', usar último valor conocido si existe
                     if (s.value === 'NA' && neutralKeys.includes(key)) {
@@ -487,6 +487,7 @@
                     }
                     if (s.value === 'NA') return; // excluir completamente
                     estadoRaw += parseInt(s.value) || 0;
+                    // incluir el máximo posible sólo si el select está habilitado
                     estadoMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
                 }
             });
@@ -515,7 +516,7 @@
             const ramMultiplier = 2; // sólo se usa aquí, amplifica el efecto de la opción 'ram'
             rendimientoKeys.forEach(k => {
                 const s = document.querySelector(`select[data-key="${k}"]`);
-                if (s) {
+                if (s && !s.disabled) {
                     if (s.value === 'NA') return; // excluir completamente
                     const val = parseInt(s.value) || 0;
                     const optMax = Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
@@ -538,7 +539,7 @@
             let rendRawDisplay = 0;
             rendimientoKeys.forEach(k => {
                 const s = document.querySelector(`select[data-key="${k}"]`);
-                if (s && s.value !== 'NA') {
+                if (s && !s.disabled && s.value !== 'NA') {
                     rendRawDisplay += parseInt(s.value) || 0;
                 }
             });
@@ -822,6 +823,69 @@
                     }
                 });
 
+                // Recalcular y actualizar el Desglose Ponderaciones usando sólo selects habilitados
+                try {
+                    // Estado Físico (35%) recalculado
+                    let recalEstadoRaw = 0, recalEstadoMax = 0;
+                    estadoKeys.forEach(k => {
+                        const s = document.querySelector(`select[data-key="${k}"]`);
+                        if (!s) return;
+                        if (!s.disabled) {
+                            if (s.value === 'NA' && neutralKeys.includes(k)) {
+                                const last = s.dataset.lastValue;
+                                if (typeof last !== 'undefined') {
+                                    recalEstadoRaw += parseInt(last) || 0;
+                                    recalEstadoMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                                }
+                            } else if (s.value !== 'NA') {
+                                recalEstadoRaw += parseInt(s.value) || 0;
+                                recalEstadoMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                            }
+                        }
+                    });
+                    const recalEstadoPercent = recalEstadoMax > 0 ? (recalEstadoRaw / recalEstadoMax) * 100 : 0;
+                    const recalEstadoValueEl = document.getElementById('estadoValue');
+                    const recalEstadoBarEl = document.getElementById('estadoBar');
+                    if (recalEstadoValueEl) recalEstadoValueEl.innerText = recalEstadoRaw;
+                    if (recalEstadoBarEl) {
+                        const w = Math.round(recalEstadoPercent);
+                        recalEstadoBarEl.style.width = w + '%';
+                        recalEstadoBarEl.className = 'h-3 rounded ' + (w >= 80 ? 'bg-green-500' : (w >= 60 ? 'bg-yellow-400' : 'bg-red-500'));
+                    }
+
+                    // Rendimiento Interno (15%) recalculado (respetando ramMultiplier y selects habilitados)
+                    let recalRendRaw = 0, recalRendMax = 0;
+                    let recalRendRawDisplay = 0;
+                    rendimientoKeys.forEach(k => {
+                        const s = document.querySelector(`select[data-key="${k}"]`);
+                        if (!s || s.disabled) return;
+                        if (s.value === 'NA') return;
+                        const val = parseInt(s.value) || 0;
+                        const optMax = Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                        if (k === 'ram') {
+                            recalRendRaw += val * ramMultiplier;
+                            recalRendMax += optMax * ramMultiplier;
+                        } else {
+                            recalRendRaw += val;
+                            recalRendMax += optMax;
+                        }
+                        // para display sumamos sin multiplicador
+                        recalRendRawDisplay += val;
+                    });
+                    const recalRendPercent = recalRendMax > 0 ? (recalRendRaw / recalRendMax) * 100 : 0;
+                    const recalRendimientoValueEl = document.getElementById('rendimientoValue');
+                    const recalRendimientoBarEl = document.getElementById('rendimientoBar');
+                    if (recalRendimientoValueEl) recalRendimientoValueEl.innerText = recalRendRawDisplay;
+                    if (recalRendimientoBarEl) {
+                        const w2 = Math.round(recalRendPercent);
+                        recalRendimientoBarEl.style.width = w2 + '%';
+                        recalRendimientoBarEl.className = 'h-3 rounded ' + (w2 >= 80 ? 'bg-green-500' : (w2 >= 60 ? 'bg-yellow-400' : 'bg-red-500'));
+                    }
+                } catch (e) {
+                    // no bloquear la ejecución si hay error en la actualización visual
+                    console.error('Error recalculando desglose:', e);
+                }
+
                 weightedTotal = finalScore;
                 noReasignable = true;
             } else {
@@ -837,6 +901,70 @@
                         cell.innerText = isNaN(p) ? '—' : p;
                     }
                 });
+
+                // Recalcular y actualizar Desglose Ponderaciones usando los selects ahora habilitados
+                try {
+                    // Recalcular Estado Físico (35%)
+                    let recalEstadoRaw = 0, recalEstadoMax = 0;
+                    estadoKeys.forEach(k => {
+                        const s = document.querySelector(`select[data-key="${k}"]`);
+                        if (!s) return;
+                        if (s.value === 'NA' && neutralKeys.includes(k)) {
+                            const last = s.dataset.lastValue;
+                            if (typeof last !== 'undefined') {
+                                recalEstadoRaw += parseInt(last) || 0;
+                                recalEstadoMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                            }
+                        } else if (s.value !== 'NA') {
+                            recalEstadoRaw += parseInt(s.value) || 0;
+                            recalEstadoMax += Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                        }
+                    });
+                    const recalEstadoPercent = recalEstadoMax > 0 ? (recalEstadoRaw / recalEstadoMax) * 100 : 0;
+                    const recalEstadoWeighted35 = Math.round((recalEstadoPercent / 100) * 35);
+                    const recalEstadoValueEl = document.getElementById('estadoValue');
+                    const recalEstadoBarEl = document.getElementById('estadoBar');
+                    if (recalEstadoValueEl) recalEstadoValueEl.innerText = recalEstadoRaw;
+                    if (recalEstadoBarEl) {
+                        const w = Math.round(recalEstadoPercent);
+                        recalEstadoBarEl.style.width = w + '%';
+                        recalEstadoBarEl.className = 'h-3 rounded ' + (w >= 80 ? 'bg-green-500' : (w >= 60 ? 'bg-yellow-400' : 'bg-red-500'));
+                    }
+
+                    // Recalcular Rendimiento Interno (15%)
+                    let recalRendRaw = 0, recalRendMax = 0;
+                    let recalRendRawDisplay = 0;
+                    rendimientoKeys.forEach(k => {
+                        const s = document.querySelector(`select[data-key="${k}"]`);
+                        if (!s) return;
+                        if (s.value === 'NA') return;
+                        const val = parseInt(s.value) || 0;
+                        const optMax = Math.max(...Array.from(s.options).map(o => parseInt(o.value) || 0));
+                        if (k === 'ram') {
+                            recalRendRaw += val * ramMultiplier;
+                            recalRendMax += optMax * ramMultiplier;
+                        } else {
+                            recalRendRaw += val;
+                            recalRendMax += optMax;
+                        }
+                        recalRendRawDisplay += val;
+                    });
+                    const recalRendPercent = recalRendMax > 0 ? (recalRendRaw / recalRendMax) * 100 : 0;
+                    const recalRendWeighted15 = Math.round((recalRendPercent / 100) * 15);
+                    const recalRendimientoValueEl = document.getElementById('rendimientoValue');
+                    const recalRendimientoBarEl = document.getElementById('rendimientoBar');
+                    if (recalRendimientoValueEl) recalRendimientoValueEl.innerText = recalRendRawDisplay;
+                    if (recalRendimientoBarEl) {
+                        const w2 = Math.round(recalRendPercent);
+                        recalRendimientoBarEl.style.width = w2 + '%';
+                        recalRendimientoBarEl.className = 'h-3 rounded ' + (w2 >= 80 ? 'bg-green-500' : (w2 >= 60 ? 'bg-yellow-400' : 'bg-red-500'));
+                    }
+
+                    // Actualizar weightedTotal localmente para reflejar los desgloses recalc
+                    weightedTotal = (antiguedadWeighted50 || 0) + (recalEstadoWeighted35 || 0) + (recalRendWeighted15 || 0);
+                } catch (e) {
+                    console.error('Error recalculando desglose al reactivar selects:', e);
+                }
             }
 
             // Aplicar tope (cap) del 54% si Teclado o Pantalla o Carcasa están en "Dañado / Trizado" (valor '1').
