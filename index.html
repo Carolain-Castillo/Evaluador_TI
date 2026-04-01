@@ -332,14 +332,6 @@
                                 <div id="antiguedadBar" class="h-3 rounded bg-green-500" style="width:0%"></div>
                             </div>
                         </div>
-                        <div id="estadoSide" class="p-2 rounded border bg-gray-50 flex flex-col items-center">
-                            <div class="text-xs text-gray-700 uppercase font-extrabold text-center">Estado Físico (35%)
-                            </div>
-                            <div id="estadoValue" class="text-lg font-extrabold text-gray-800 mt-2 text-center">0</div>
-                            <div class="w-full bg-gray-200 rounded h-3 mt-3">
-                                <div id="estadoBar" class="h-3 rounded bg-green-500" style="width:0%"></div>
-                            </div>
-                        </div>
                         <div id="rendimientoSide" class="p-2 rounded border bg-gray-50 flex flex-col items-center">
                             <div class="text-xs text-gray-700 uppercase font-extrabold text-center">Rend. Interno (15%)
                             </div>
@@ -347,6 +339,14 @@
                             </div>
                             <div class="w-full bg-gray-200 rounded h-3 mt-3">
                                 <div id="rendimientoBar" class="h-3 rounded bg-green-500" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <div id="estadoSide" class="p-2 rounded border bg-gray-50 flex flex-col items-center">
+                            <div class="text-xs text-gray-700 uppercase font-extrabold text-center">Estado Físico (35%)
+                            </div>
+                            <div id="estadoValue" class="text-lg font-extrabold text-gray-800 mt-2 text-center">0</div>
+                            <div class="w-full bg-gray-200 rounded h-3 mt-3">
+                                <div id="estadoBar" class="h-3 rounded bg-green-500" style="width:0%"></div>
                             </div>
                         </div>
                     </div>
@@ -1046,9 +1046,20 @@
             const recomendaciones = Array.from(document.querySelectorAll("#upgradeContainer div"))
                 .map(div => `<li>${div.innerText}</li>`).join("");
 
-            // Obtener tabla completa con selección
+            // Obtener tabla completa con selección, incluyendo títulos de sección (colspan)
             let tablaHTML = "";
             document.querySelectorAll("#tablaEvaluacion tr").forEach(row => {
+                // Detectar filas que actúan como encabezado de sección (td colspan="3")
+                const sectionTd = row.querySelector('td[colspan="3"]');
+                if (sectionTd) {
+                    const sectionTitle = sectionTd.innerText.trim();
+                    tablaHTML += `
+                    <tr style="background:#eef2ff;">
+                        <td colspan="3" style="padding:6px 8px; font-weight:800;">${sectionTitle}</td>
+                    </tr>`;
+                    return;
+                }
+
                 const cols = row.querySelectorAll("td");
                 if (cols.length === 3) {
                     const criterio = cols[0].innerText;
@@ -1058,11 +1069,10 @@
                         const puntos = cols[2].innerText;
                         tablaHTML += `
                     <tr>
-                        <td>${criterio}</td>
-                        <td>${condicion}</td>
-                        <td style="text-align:center;">${puntos}</td>
-                    </tr>
-                `;
+                        <td style="padding:6px 8px">${criterio}</td>
+                        <td style="padding:6px 8px">${condicion}</td>
+                        <td style="text-align:center; padding:6px 8px">${puntos}</td>
+                    </tr>`;
                     }
                 }
             });
@@ -1102,8 +1112,8 @@
             <h2 style="font-weight:700;">Desglose de Ponderaciones</h2>
             <ul>
                 <li>Antigüedad (50%): ${antiguedad}</li>
-                <li>Estado Físico (35%): ${estadoFisico}</li>
                 <li>Rendimiento Interno (15%): ${rendimiento}</li>
+                <li>Estado Físico (35%): ${estadoFisico}</li>
             </ul>
         </div>
 
